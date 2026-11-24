@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أسماك المعلم</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
+header{background:#181818;padding:25px 15px;text-align:center;border-bottom:3px solid #ff7900}
+header h1{color:#ff7900;font-size:32px;margin:5px}
+header p{color:#ddd}
+nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:15px}
+nav a{color:white;text-decoration:none;font-weight:bold}
+.hero{text-align:center;padding:45px 15px;background:linear-gradient(135deg,#252525,#111)}
+.hero h2{color:#ff7900;font-size:27px}
+.hero p{font-size:17px;line-height:1.8}
+.btn{display:inline-block;background:#ff7900;color:#111;padding:13px 25px;border-radius:9px;text-decoration:none;font-weight:bold}
+h2.section{text-align:center;color:#ff7900;margin:35px 0 20px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px;padding:15px}
+.card{background:#202020;border:1px solid #444;border-radius:12px;padding:20px 10px;text-align:center}
+.card .fish{font-size:45px}
+.card h3{color:#ff8a19}
+.card button{background:#ff7900;border:0;padding:10px;border-radius:7px;font-weight:bold}
+.info{text-align:center;padding:25px;line-height:2;background:#202020;margin-top:30px}
+footer{text-align:center;padding:20px;color:#aaa}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🐟 أسماك المعلم</h1>
+<p>أجود الأسماك وأفضل الأسعار</p>
+</header>
+
+<nav>
+<a href="#home">الرئيسية</a>
+<a href="#products">المنتجات</a>
+<a href="#contact">تواصل معنا</a>
+</nav>
+
+<section class="hero" id="home">
+<h2>أهلاً بيكم في أسماك المعلم ❤️</h2>
+<p>أسماك طازجة يومياً<br>اختار طلبك وإحنا نجهزهولك بكل حب</p>
+<a class="btn" href="#products">شوف منتجاتنا</a>
+</section>
+
+<h2 class="section" id="products">🛒 أقسام منتجاتنا</h2>
+
+<section class="products">
+<div class="card">
+<div class="fish">🐟</div>
+<h3>أسماك</h3>
+<p>تشكيلة من أجود الأسماك</p>
+<button onclick="order('أسماك')">اطلب الآن</button>
+</div>
+<div class="card">
+<div class="fish">🦐</div>
+<h3>جمبري</h3>
+<p>أحجام وأنواع مختلفة</p>
+<button onclick="order('جمبري')">اطلب الآن</button>
+</div>
+<div class="card">
+<div class="fish">🦀</div>
+<h3>كابوريا</h3>
+<p>كابوريا طازجة</p>
+<button onclick="order('كابوريا')">اطلب الآن</button>
+</div>
+<div class="card">
+<div class="fish">🐠</div>
+<h3>فسيخ ورنجة</h3>
+<p>أجود الأنواع</p>
+<button onclick="order('فسيخ ورنجة')">اطلب الآن</button>
+</div>
+<div class="card">
+<div class="fish">🍤</div>
+<h3>مأكولات بحرية</h3>
+<p>تشكيلة مميزة</p>
+<button onclick="order('مأكولات بحرية')">اطلب الآن</button>
+</div>
+<div class="card">
+<div class="fish">🍚</div>
+<h3>وجبات جاهزة</h3>
+<p>مشوي ومقلي ورز</p>
+<button onclick="order('وجبات جاهزة')">اطلب الآن</button>
+</div>
+</section>
+
+<section class="info" id="contact">
+<h2 style="color:#ff7900">📍 زورونا في أسماك المعلم</h2>
+<p>باكوس - شارع الفتح - على قمة صيدلية علاء الدين</p>
+<p>📞 01227221028</p>
+<a class="btn" href="https://wa.me/201227221028">اطلب على واتساب</a>
+</section>
+
+<footer>
+جميع الحقوق محفوظة © أسماك المعلم
+</footer>
+
+<script>
+function order(product){
+let msg="السلام عليكم، عايز أطلب من أسماك المعلم: "+product;
+window.open("https://wa.me/201227221028?text="+encodeURIComponent(msg),"_blank");
+}
+</script>
+
+</body>
+</html>
