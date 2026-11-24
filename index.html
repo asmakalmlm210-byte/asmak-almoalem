@@ -218,7 +218,7 @@ subtotal+=cost;
 html+=`<div class="cart-item">
 <strong>${p.name}</strong><br>
 الكمية: ${item.qty} كيلو<br>
-التجهيز: ${p.prep || item.prep}<br>
+التجهيز: ${item.prep}<br>
 السعر: ${cost} جنيه<br>
 <button onclick="changeQty(${i},-0.5)">➖</button>
 <button onclick="changeQty(${i},0.5)">➕</button>
@@ -226,7 +226,7 @@ html+=`<div class="cart-item">
 </div>`;
 });
 
-let delivery=document.getElementById("method").value==="pickup"?0:30;
+let delivery=document.getElementById("method").value==="pickup"?0:40;
 
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
@@ -270,7 +270,7 @@ subtotal+=cost;
 return `• ${p.name}: ${item.qty} كيلو - ${item.prep} - ${cost} جنيه`;
 });
 
-let delivery=method==="pickup"?0:30;
+let delivery=method==="pickup"?0:40;
 let total=subtotal+delivery;
 
 let msg=
@@ -293,7 +293,6 @@ window.open(url,"_blank");
 
 updateDelivery();
 
-// تسجيل ملف تشغيل التطبيق
 if("serviceWorker" in navigator){
 window.addEventListener("load",()=>{
 navigator.serviceWorker.register("./sw.js")
@@ -302,7 +301,6 @@ navigator.serviceWorker.register("./sw.js")
 });
 }
 
-// زر تثبيت التطبيق
 let deferredPrompt;
 const installBtn=document.getElementById("installBtn");
 
