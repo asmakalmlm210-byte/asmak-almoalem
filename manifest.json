@@ -1,0 +1,13 @@
+
+{
+  "name": "أسماك المعلم",
+  "short_name": "المعلم",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101010",
+  "theme_color": "#ff7900",
+  "description": "تطبيق أسماك المعلم لطلبات الأسماك والجمبري"
+}
