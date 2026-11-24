@@ -40,8 +40,6 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 .info{text-align:center;padding:25px;background:#202020;line-height:2;margin-top:25px}
 footer{text-align:center;padding:20px;color:#aaa}
 #installBtn{display:none;margin:12px auto}
-
-/* عرض الخميس */
 .offer-section{padding:18px 14px}
 .offer-card{
 background:linear-gradient(145deg,#292018,#151515);
@@ -51,15 +49,7 @@ padding:20px 15px;
 text-align:center;
 box-shadow:0 5px 22px #ff790022;
 }
-.offer-tag{
-display:inline-block;
-background:#ff7900;
-color:#111;
-padding:8px 17px;
-border-radius:30px;
-font-weight:bold;
-margin-bottom:12px;
-}
+.offer-tag{display:inline-block;background:#ff7900;color:#111;padding:8px 17px;border-radius:30px;font-weight:bold;margin-bottom:12px}
 .offer-image{font-size:65px;margin:10px}
 .offer-card h2{color:#ff7900;font-size:26px}
 .offer-details{line-height:2;color:#eee}
@@ -91,7 +81,6 @@ margin-bottom:12px;
 <button class="btn" id="installBtn" type="button">📲 تثبيت التطبيق</button>
 </section>
 
-<!-- عرض الخميس الجديد -->
 <section class="offer-section" id="offers">
 <div class="offer-card">
 <div class="offer-tag">🔥 عرض الخميس 🔥</div>
@@ -174,7 +163,7 @@ margin-bottom:12px;
 
 <label>طريقة استلام الطلب</label>
 <select id="method" onchange="updateDelivery()">
-<option value="delivery">توصيل للمنزل - 30 جنيه</option>
+<option value="delivery">توصيل للمنزل - 40 جنيه</option>
 <option value="pickup">استلام من المحل - مجاناً</option>
 </select>
 
@@ -236,12 +225,8 @@ alert("تمت إضافة المنتج للسلة ❤️");
 
 function addOffer(){
 let found=cart.find(x=>x.id===5);
-
-if(found){
-found.qty+=1;
-}else{
-cart.push({id:5,qty:1,prep:"العرض كامل"});
-}
+if(found)found.qty+=1;
+else cart.push({id:5,qty:1,prep:"العرض كامل"});
 
 render();
 alert("تمت إضافة عرض الخميس للسلة ❤️");
@@ -296,7 +281,7 @@ html+=`<div class="cart-item">
 }
 });
 
-let delivery=document.getElementById("method").value==="pickup"?0:30;
+let delivery=document.getElementById("method").value==="pickup"?0:40;
 
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
@@ -346,7 +331,7 @@ return `🔥 ${p.name}\nالكمية: ${item.qty} عرض\n2 كيلو جمبري 
 return `• ${p.name}: ${item.qty} كيلو - ${item.prep} - ${cost} جنيه`;
 });
 
-let delivery=method==="pickup"?0:30;
+let delivery=method==="pickup"?0:40;
 let total=subtotal+delivery;
 
 let msg=
