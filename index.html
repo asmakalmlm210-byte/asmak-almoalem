@@ -4,9 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ff7900">
+<meta name="description" content="أسماك المعلم - أسماك طازجة وطلبات أونلاين">
+<link rel="manifest" href="./manifest.json">
 <title>أسماك المعلم</title>
+
 <style>
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
 header{text-align:center;background:#191919;padding:20px;border-bottom:4px solid #ff7900}
 header h1{color:#ff7900;font-size:32px;margin:8px}
@@ -14,7 +19,7 @@ nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:16px;bac
 nav a{color:white;text-decoration:none;font-weight:bold}
 .hero{text-align:center;padding:38px 15px;background:linear-gradient(135deg,#292929,#111)}
 .hero h2{color:#ff7900}
-.btn{background:#ff7900;color:#111;border:0;padding:13px 20px;border-radius:9px;font-weight:bold;cursor:pointer}
+.btn{display:inline-block;background:#ff7900;color:#111;border:0;padding:13px 20px;border-radius:9px;font-weight:bold;cursor:pointer;text-decoration:none}
 .section{text-align:center;color:#ff7900;margin:30px 10px}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;padding:14px}
 .card{background:#202020;border:1px solid #444;border-radius:13px;padding:16px 10px;text-align:center}
@@ -26,7 +31,7 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 .card .btn{width:100%;margin-top:8px}
 .cart,.checkout{margin:18px 14px;padding:18px;background:#202020;border:1px solid #ff7900;border-radius:12px}
 .cart-item{padding:12px 0;border-bottom:1px solid #555;line-height:1.9}
-.cart-item button{padding:7px 12px;margin:3px;border:0;border-radius:6px}
+.cart-item button{padding:7px 12px;margin:3px;border:0;border-radius:6px;cursor:pointer}
 .total{color:#ff7900;font-size:22px;font-weight:bold;line-height:2}
 .checkout h2{color:#ff7900}
 .checkout label{display:block;margin-top:13px}
@@ -34,8 +39,10 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 .note{color:#ffb66d;font-size:13px;line-height:1.7}
 .info{text-align:center;padding:25px;background:#202020;line-height:2;margin-top:25px}
 footer{text-align:center;padding:20px;color:#aaa}
+#installBtn{display:none;margin:12px auto}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -54,11 +61,13 @@ footer{text-align:center;padding:20px;color:#aaa}
 <h2>❤️ أهلاً بيكم في أسماك المعلم</h2>
 <p>أسماك طازجة يومياً<br>اختار طلبك وإحنا نجهزهولك بكل حب</p>
 <a class="btn" href="#products">شوف منتجاتنا</a>
+<button class="btn" id="installBtn" type="button">📲 تثبيت التطبيق</button>
 </section>
 
 <h2 class="section" id="products">🛒 منتجاتنا وأسعارنا</h2>
 
 <section class="products">
+
 <div class="card">
 <div class="fish">🐟</div><h3>سمك بلطي</h3>
 <div class="price">90 جنيه</div><small>سعر الكيلو</small>
@@ -98,6 +107,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <select id="p4"><option>جاهز</option><option>تنظيف</option><option>شوي</option></select>
 <button class="btn" onclick="add(4)">أضف للسلة</button>
 </div>
+
 </section>
 
 <section class="cart" id="cart">
@@ -117,7 +127,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <input id="customer" placeholder="اكتب اسمك بالكامل">
 
 <label>رقم الموبايل</label>
-<input id="phone" type="tel" placeholder="01xxxxxxxxx">
+<input id="phone" type="tel" inputmode="tel" placeholder="01xxxxxxxxx">
 
 <label>طريقة استلام الطلب</label>
 <select id="method" onchange="updateDelivery()">
@@ -159,17 +169,23 @@ const products=[
 {name:"فسيخ",price:320},
 {name:"رنجة",price:180}
 ];
+
 let cart=[];
 
 function add(id){
 let qty=Number(document.getElementById("q"+id).value);
 let prep=document.getElementById("p"+id).value;
+
 if(!Number.isFinite(qty)||qty<=0){
-alert("اكتب كمية صحيحة");return;
+alert("اكتب كمية صحيحة");
+return;
 }
+
 let found=cart.find(x=>x.id===id&&x.prep===prep);
+
 if(found)found.qty+=qty;
 else cart.push({id,qty,prep});
+
 render();
 alert("تمت إضافة المنتج للسلة ❤️");
 }
@@ -193,21 +209,25 @@ render();
 
 function render(){
 let html="",subtotal=0;
+
 cart.forEach((item,i)=>{
 let p=products[item.id];
 let cost=p.price*item.qty;
 subtotal+=cost;
+
 html+=`<div class="cart-item">
 <strong>${p.name}</strong><br>
 الكمية: ${item.qty} كيلو<br>
-التجهيز: ${item.prep}<br>
+التجهيز: ${p.prep || item.prep}<br>
 السعر: ${cost} جنيه<br>
 <button onclick="changeQty(${i},-0.5)">➖</button>
 <button onclick="changeQty(${i},0.5)">➕</button>
 <button onclick="removeItem(${i})">حذف 🗑️</button>
 </div>`;
 });
+
 let delivery=document.getElementById("method").value==="pickup"?0:30;
+
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
 document.getElementById("delivery").textContent=delivery;
@@ -215,45 +235,96 @@ document.getElementById("total").textContent=subtotal+delivery;
 }
 
 function checkout(){
-if(!cart.length){alert("السلة فارغة، اختار منتجات الأول");return;}
+if(!cart.length){
+alert("السلة فارغة، اختار منتجات الأول");
+return;
+}
+
 let name=document.getElementById("customer").value.trim();
 let phone=document.getElementById("phone").value.trim();
 let method=document.getElementById("method").value;
 let address=document.getElementById("address").value.trim();
-let payment=document.getElementById("payment").value;
 let notes=document.getElementById("notes").value.trim();
 
-if(!name||!phone){alert("من فضلك اكتب الاسم ورقم الموبايل");return;}
-if(!/^01[0125][0-9]{8}$/.test(phone)){alert("اكتب رقم موبايل مصري صحيح");return;}
-if(method==="delivery"&&!address){alert("اكتب عنوان التوصيل بالتفصيل");return;}
+if(!name||!phone){
+alert("من فضلك اكتب الاسم ورقم الموبايل");
+return;
+}
+
+if(!/^01[0125][0-9]{8}$/.test(phone)){
+alert("اكتب رقم موبايل مصري صحيح");
+return;
+}
+
+if(method==="delivery"&&!address){
+alert("اكتب عنوان التوصيل بالتفصيل");
+return;
+}
 
 let subtotal=0;
+
 let lines=cart.map(item=>{
 let p=products[item.id];
 let cost=p.price*item.qty;
 subtotal+=cost;
 return `• ${p.name}: ${item.qty} كيلو - ${item.prep} - ${cost} جنيه`;
 });
+
 let delivery=method==="pickup"?0:30;
 let total=subtotal+delivery;
-let msg=
-"طلب جديد من موقع أسماك المعلم 🐟%0A"+
-"الاسم: "+name+"%0A"+
-"الموبايل: "+phone+"%0A"+
-"طريقة الاستلام: "+(method==="pickup"?"استلام من المحل":"توصيل للمنزل")+
-(method==="pickup"?"":"%0Aالعنوان: "+address)+
-"%0Aطريقة الدفع: كاش عند الاستلام%0A%0A"+
-lines.join("%0A")+
-"%0A%0Aقيمة المنتجات: "+subtotal+" جنيه"+
-"%0Aالتوصيل: "+delivery+" جنيه"+
-"%0Aالإجمالي: "+total+" جنيه"+
-(notes?"%0Aملاحظات: "+notes:"")+
-"%0Aبرجاء تأكيد الطلب.";
 
-window.open("https://wa.me/201227221028?text="+encodeURIComponent(msg)," _blank");
+let msg=
+"طلب جديد من موقع أسماك المعلم 🐟\n"+
+"الاسم: "+name+"\n"+
+"الموبايل: "+phone+"\n"+
+"طريقة الاستلام: "+(method==="pickup"?"استلام من المحل":"توصيل للمنزل")+
+(method==="pickup"?"":"\nالعنوان: "+address)+
+"\nطريقة الدفع: كاش عند الاستلام\n\n"+
+lines.join("\n")+
+"\n\nقيمة المنتجات: "+subtotal+" جنيه"+
+"\nالتوصيل: "+delivery+" جنيه"+
+"\nالإجمالي: "+total+" جنيه"+
+(notes?"\nملاحظات: "+notes:"")+
+"\nبرجاء تأكيد الطلب.";
+
+let url="https://wa.me/201227221028?text="+encodeURIComponent(msg);
+window.open(url,"_blank");
 }
 
 updateDelivery();
+
+// تسجيل ملف تشغيل التطبيق
+if("serviceWorker" in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./sw.js")
+.then(()=>console.log("تم تجهيز التطبيق"))
+.catch(error=>console.log("تعذر تسجيل التطبيق",error));
+});
+}
+
+// زر تثبيت التطبيق
+let deferredPrompt;
+const installBtn=document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt",(event)=>{
+event.preventDefault();
+deferredPrompt=event;
+installBtn.style.display="inline-block";
+});
+
+installBtn.addEventListener("click",async()=>{
+if(!deferredPrompt)return;
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+deferredPrompt=null;
+installBtn.style.display="none";
+});
+
+window.addEventListener("appinstalled",()=>{
+installBtn.style.display="none";
+alert("أهلاً بيك في تطبيق أسماك المعلم ❤️");
+});
 </script>
+
 </body>
 </html>
