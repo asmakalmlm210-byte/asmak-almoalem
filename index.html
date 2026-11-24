@@ -3,27 +3,33 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أسماك المعلم</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>أسماك المعلم | اطلب أونلاين</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
-header{background:#181818;padding:25px 15px;text-align:center;border-bottom:3px solid #ff7900}
-header h1{color:#ff7900;font-size:32px;margin:5px}
-header p{color:#ddd}
-nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:15px}
+body{margin:0;background:#101010;color:#fff;font-family:Arial,sans-serif}
+header{text-align:center;background:#191919;padding:25px;border-bottom:4px solid #ff7900}
+header h1{color:#ff7900;font-size:32px}
+nav{display:flex;justify-content:center;gap:20px;padding:18px;background:#151515;flex-wrap:wrap}
 nav a{color:white;text-decoration:none;font-weight:bold}
 .hero{text-align:center;padding:45px 15px;background:linear-gradient(135deg,#252525,#111)}
-.hero h2{color:#ff7900;font-size:27px}
-.hero p{font-size:17px;line-height:1.8}
-.btn{display:inline-block;background:#ff7900;color:#111;padding:13px 25px;border-radius:9px;text-decoration:none;font-weight:bold}
-h2.section{text-align:center;color:#ff7900;margin:35px 0 20px}
+.hero h2{color:#ff7900;font-size:28px}
+.hero p{line-height:2}
+.btn{background:#ff7900;color:#111;border:0;padding:13px 22px;border-radius:9px;font-weight:bold;text-decoration:none;cursor:pointer}
+.section{text-align:center;color:#ff7900;margin:35px 10px}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px;padding:15px}
-.card{background:#202020;border:1px solid #444;border-radius:12px;padding:20px 10px;text-align:center}
-.card .fish{font-size:45px}
+.card{background:#202020;border:1px solid #444;border-radius:14px;padding:18px 10px;text-align:center}
+.fish{font-size:48px}
 .card h3{color:#ff8a19}
-.card button{background:#ff7900;border:0;padding:10px;border-radius:7px;font-weight:bold}
-.info{text-align:center;padding:25px;line-height:2;background:#202020;margin-top:30px}
+.price{font-size:21px;font-weight:bold;color:#fff}
+small{color:#bbb}
+input,select{width:100%;padding:11px;margin:8px 0;background:#111;color:white;border:1px solid #555;border-radius:7px}
+.card button{width:100%;margin-top:8px}
+.cart{margin:20px 14px;padding:18px;background:#202020;border:1px solid #ff7900;border-radius:12px}
+.cart-item{border-bottom:1px solid #555;padding:12px 0;line-height:1.8}
+.cart-item button{background:#444;color:white;border:0;border-radius:5px;padding:6px 10px;margin:3px}
+.total{font-size:22px;color:#ff7900;font-weight:bold;margin:18px 0}
+.info{text-align:center;padding:25px;background:#202020;line-height:2;margin-top:30px}
 footer{text-align:center;padding:20px;color:#aaa}
 </style>
 </head>
@@ -37,73 +43,190 @@ footer{text-align:center;padding:20px;color:#aaa}
 <nav>
 <a href="#home">الرئيسية</a>
 <a href="#products">المنتجات</a>
+<a href="#cart">سلة الطلبات 🛒</a>
 <a href="#contact">تواصل معنا</a>
 </nav>
 
 <section class="hero" id="home">
-<h2>أهلاً بيكم في أسماك المعلم ❤️</h2>
+<h2>❤️ أهلاً بيكم في أسماك المعلم</h2>
 <p>أسماك طازجة يومياً<br>اختار طلبك وإحنا نجهزهولك بكل حب</p>
 <a class="btn" href="#products">شوف منتجاتنا</a>
 </section>
 
-<h2 class="section" id="products">🛒 أقسام منتجاتنا</h2>
+<h2 class="section" id="products">🛒 منتجاتنا وأسعارنا</h2>
 
 <section class="products">
+
 <div class="card">
 <div class="fish">🐟</div>
-<h3>أسماك</h3>
-<p>تشكيلة من أجود الأسماك</p>
-<button onclick="order('أسماك')">اطلب الآن</button>
+<h3>سمك بلطي</h3>
+<div class="price">90 جنيه</div>
+<small>سعر الكيلو</small>
+<input type="number" id="q0" value="1" min="0.5" step="0.5">
+<select id="p0">
+<option>تنظيف</option><option>بدون تنظيف</option><option>شوي</option><option>قلي</option>
+</select>
+<button class="btn" onclick="add(0)">أضف للسلة</button>
 </div>
+
 <div class="card">
 <div class="fish">🦐</div>
 <h3>جمبري</h3>
-<p>أحجام وأنواع مختلفة</p>
-<button onclick="order('جمبري')">اطلب الآن</button>
+<div class="price">350 جنيه</div>
+<small>سعر الكيلو</small>
+<input type="number" id="q1" value="1" min="0.5" step="0.5">
+<select id="p1">
+<option>تنظيف</option><option>بدون تنظيف</option><option>شوي</option><option>قلي</option>
+</select>
+<button class="btn" onclick="add(1)">أضف للسلة</button>
 </div>
+
 <div class="card">
 <div class="fish">🦀</div>
 <h3>كابوريا</h3>
-<p>كابوريا طازجة</p>
-<button onclick="order('كابوريا')">اطلب الآن</button>
+<div class="price">200 جنيه</div>
+<small>سعر الكيلو</small>
+<input type="number" id="q2" value="1" min="0.5" step="0.5">
+<select id="p2">
+<option>تنظيف</option><option>بدون تنظيف</option><option>شوي</option><option>قلي</option>
+</select>
+<button class="btn" onclick="add(2)">أضف للسلة</button>
 </div>
+
+<div class="card">
+<div class="fish">🐟</div>
+<h3>فسيخ</h3>
+<div class="price">320 جنيه</div>
+<small>سعر الكيلو</small>
+<input type="number" id="q3" value="1" min="0.5" step="0.5">
+<select id="p3">
+<option>جاهز</option><option>تجهيز</option>
+</select>
+<button class="btn" onclick="add(3)">أضف للسلة</button>
+</div>
+
 <div class="card">
 <div class="fish">🐠</div>
-<h3>فسيخ ورنجة</h3>
-<p>أجود الأنواع</p>
-<button onclick="order('فسيخ ورنجة')">اطلب الآن</button>
+<h3>رنجة</h3>
+<div class="price">180 جنيه</div>
+<small>سعر الكيلو</small>
+<input type="number" id="q4" value="1" min="0.5" step="0.5">
+<select id="p4">
+<option>جاهز</option><option>تنظيف</option><option>شوي</option>
+</select>
+<button class="btn" onclick="add(4)">أضف للسلة</button>
 </div>
-<div class="card">
-<div class="fish">🍤</div>
-<h3>مأكولات بحرية</h3>
-<p>تشكيلة مميزة</p>
-<button onclick="order('مأكولات بحرية')">اطلب الآن</button>
-</div>
-<div class="card">
-<div class="fish">🍚</div>
-<h3>وجبات جاهزة</h3>
-<p>مشوي ومقلي ورز</p>
-<button onclick="order('وجبات جاهزة')">اطلب الآن</button>
-</div>
+
+</section>
+
+<section class="cart" id="cart">
+<h2 style="color:#ff7900">🛒 سلة مشترياتك</h2>
+<div id="items">السلة فارغة، اختار منتجاتك ❤️</div>
+<div class="total">الإجمالي: <span id="total">0</span> جنيه</div>
+<button class="btn" style="width:100%" onclick="checkout()">إرسال الطلب على واتساب 📲</button>
 </section>
 
 <section class="info" id="contact">
-<h2 style="color:#ff7900">📍 زورونا في أسماك المعلم</h2>
+<h2 style="color:#ff7900">📍 أسماك المعلم</h2>
 <p>باكوس - شارع الفتح - على قمة صيدلية علاء الدين</p>
 <p>📞 01227221028</p>
-<a class="btn" href="https://wa.me/201227221028">اطلب على واتساب</a>
+<a class="btn" href="https://wa.me/201227221028">تواصل معنا واتساب</a>
 </section>
 
-<footer>
-جميع الحقوق محفوظة © أسماك المعلم
-</footer>
+<footer>جميع الحقوق محفوظة © أسماك المعلم</footer>
 
 <script>
-function order(product){
-let msg="السلام عليكم، عايز أطلب من أسماك المعلم: "+product;
+const products=[
+{name:"سمك بلطي",price:90},
+{name:"جمبري",price:350},
+{name:"كابوريا",price:200},
+{name:"فسيخ",price:320},
+{name:"رنجة",price:180}
+];
+
+let cart=[];
+
+function add(id){
+let qty=Number(document.getElementById("q"+id).value);
+let prep=document.getElementById("p"+id).value;
+
+if(!Number.isFinite(qty)||qty<=0){
+alert("من فضلك اكتب كمية صحيحة");
+return;
+}
+
+let found=cart.find(x=>x.id===id&&x.prep===prep);
+if(found){found.qty+=qty;}
+else{cart.push({id,qty,prep});}
+
+render();
+alert("تمت إضافة المنتج للسلة ❤️");
+}
+
+function render(){
+let html="";
+let total=0;
+
+cart.forEach((item,index)=>{
+let product=products[item.id];
+let subtotal=product.price*item.qty;
+total+=subtotal;
+
+html+=`
+<div class="cart-item">
+<strong>${product.name}</strong><br>
+الكمية: ${item.qty} كيلو<br>
+التجهيز: ${item.prep}<br>
+السعر: ${subtotal} جنيه<br>
+<button onclick="changeQty(${index},-0.5)">➖</button>
+<button onclick="changeQty(${index},0.5)">➕</button>
+<button onclick="removeItem(${index})">حذف 🗑️</button>
+</div>`;
+});
+
+document.getElementById("items").innerHTML=html||"السلة فارغة، اختار منتجاتك ❤️";
+document.getElementById("total").textContent=total;
+}
+
+function changeQty(index,amount){
+cart[index].qty+=amount;
+if(cart[index].qty<=0){cart.splice(index,1);}
+render();
+}
+
+function removeItem(index){
+cart.splice(index,1);
+render();
+}
+
+function checkout(){
+if(cart.length===0){
+alert("السلة فارغة، اختار منتجات الأول");
+return;
+}
+
+let name=prompt("اكتب اسمك:");
+if(!name||!name.trim())return;
+
+let address=prompt("اكتب عنوان التوصيل:");
+if(!address||!address.trim())return;
+
+let msg="طلب جديد من موقع أسماك المعلم ❤️%0A";
+msg+="الاسم: "+name+"%0Aالعنوان: "+address+"%0A%0A";
+
+let total=0;
+cart.forEach(item=>{
+let p=products[item.id];
+let subtotal=p.price*item.qty;
+total+=subtotal;
+msg+=p.name+" - "+item.qty+" كيلو - "+item.prep+" - "+subtotal+" جنيه%0A";
+});
+
+msg+="%0Aالإجمالي: "+total+" جنيه";
+msg+="%0Aبرجاء تأكيد الطلب والتوصيل.";
+
 window.open("https://wa.me/201227221028?text="+encodeURIComponent(msg),"_blank");
 }
 </script>
-
 </body>
 </html>
