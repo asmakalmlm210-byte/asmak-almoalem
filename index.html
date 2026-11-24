@@ -40,6 +40,32 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 .info{text-align:center;padding:25px;background:#202020;line-height:2;margin-top:25px}
 footer{text-align:center;padding:20px;color:#aaa}
 #installBtn{display:none;margin:12px auto}
+
+/* عرض الخميس */
+.offer-section{padding:18px 14px}
+.offer-card{
+background:linear-gradient(145deg,#292018,#151515);
+border:2px solid #ff7900;
+border-radius:18px;
+padding:20px 15px;
+text-align:center;
+box-shadow:0 5px 22px #ff790022;
+}
+.offer-tag{
+display:inline-block;
+background:#ff7900;
+color:#111;
+padding:8px 17px;
+border-radius:30px;
+font-weight:bold;
+margin-bottom:12px;
+}
+.offer-image{font-size:65px;margin:10px}
+.offer-card h2{color:#ff7900;font-size:26px}
+.offer-details{line-height:2;color:#eee}
+.offer-price{font-size:32px;font-weight:bold;color:#ff7900;margin:12px}
+.offer-gift{color:#ffb66d;font-weight:bold}
+.offer-card .btn{width:100%;margin-top:10px}
 </style>
 </head>
 
@@ -52,6 +78,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 
 <nav>
 <a href="#home">الرئيسية</a>
+<a href="#offers">العروض 🔥</a>
 <a href="#products">المنتجات</a>
 <a href="#cart">السلة 🛒</a>
 <a href="#contact">تواصل معنا</a>
@@ -62,6 +89,22 @@ footer{text-align:center;padding:20px;color:#aaa}
 <p>أسماك طازجة يومياً<br>اختار طلبك وإحنا نجهزهولك بكل حب</p>
 <a class="btn" href="#products">شوف منتجاتنا</a>
 <button class="btn" id="installBtn" type="button">📲 تثبيت التطبيق</button>
+</section>
+
+<!-- عرض الخميس الجديد -->
+<section class="offer-section" id="offers">
+<div class="offer-card">
+<div class="offer-tag">🔥 عرض الخميس 🔥</div>
+<div class="offer-image">🦐🍚</div>
+<h2>عرض الجمبري الجامبو</h2>
+<div class="offer-details">
+<strong>2 كيلو جمبري</strong><br>
+<span class="offer-gift">🎁 وعليهم طبقين رز هدية</span>
+</div>
+<div class="offer-price">700 جنيه فقط</div>
+<p class="note">الحق العرض قبل نفاد الكمية ❤️</p>
+<button class="btn" onclick="addOffer()">اطلب العرض الآن 🛒</button>
+</div>
 </section>
 
 <h2 class="section" id="products">🛒 منتجاتنا وأسعارنا</h2>
@@ -131,7 +174,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 
 <label>طريقة استلام الطلب</label>
 <select id="method" onchange="updateDelivery()">
-<option value="delivery">توصيل للمنزل - 40 جنيه</option>
+<option value="delivery">توصيل للمنزل - 30 جنيه</option>
 <option value="pickup">استلام من المحل - مجاناً</option>
 </select>
 
@@ -167,7 +210,8 @@ const products=[
 {name:"جمبري",price:350},
 {name:"كابوريا",price:200},
 {name:"فسيخ",price:320},
-{name:"رنجة",price:180}
+{name:"رنجة",price:180},
+{name:"عرض الخميس: 2 كيلو جمبري + طبقين رز هدية",price:700,offer:true}
 ];
 
 let cart=[];
@@ -188,6 +232,20 @@ else cart.push({id,qty,prep});
 
 render();
 alert("تمت إضافة المنتج للسلة ❤️");
+}
+
+function addOffer(){
+let found=cart.find(x=>x.id===5);
+
+if(found){
+found.qty+=1;
+}else{
+cart.push({id:5,qty:1,prep:"العرض كامل"});
+}
+
+render();
+alert("تمت إضافة عرض الخميس للسلة ❤️");
+document.getElementById("cart").scrollIntoView({behavior:"smooth"});
 }
 
 function removeItem(i){
@@ -215,6 +273,17 @@ let p=products[item.id];
 let cost=p.price*item.qty;
 subtotal+=cost;
 
+if(p.offer){
+html+=`<div class="cart-item">
+<strong>🔥 ${p.name}</strong><br>
+الكمية: ${item.qty} عرض<br>
+التفاصيل: 2 كيلو جمبري + طبقين رز هدية<br>
+السعر: ${cost} جنيه<br>
+<button onclick="changeQty(${i},-1)">➖</button>
+<button onclick="changeQty(${i},1)">➕</button>
+<button onclick="removeItem(${i})">حذف 🗑️</button>
+</div>`;
+}else{
 html+=`<div class="cart-item">
 <strong>${p.name}</strong><br>
 الكمية: ${item.qty} كيلو<br>
@@ -224,9 +293,10 @@ html+=`<div class="cart-item">
 <button onclick="changeQty(${i},0.5)">➕</button>
 <button onclick="removeItem(${i})">حذف 🗑️</button>
 </div>`;
+}
 });
 
-let delivery=document.getElementById("method").value==="pickup"?0:40;
+let delivery=document.getElementById("method").value==="pickup"?0:30;
 
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
@@ -245,6 +315,7 @@ let phone=document.getElementById("phone").value.trim();
 let method=document.getElementById("method").value;
 let address=document.getElementById("address").value.trim();
 let notes=document.getElementById("notes").value.trim();
+let payment=document.getElementById("payment").value;
 
 if(!name||!phone){
 alert("من فضلك اكتب الاسم ورقم الموبايل");
@@ -267,10 +338,15 @@ let lines=cart.map(item=>{
 let p=products[item.id];
 let cost=p.price*item.qty;
 subtotal+=cost;
+
+if(p.offer){
+return `🔥 ${p.name}\nالكمية: ${item.qty} عرض\n2 كيلو جمبري + طبقين رز هدية\nالسعر: ${cost} جنيه`;
+}
+
 return `• ${p.name}: ${item.qty} كيلو - ${item.prep} - ${cost} جنيه`;
 });
 
-let delivery=method==="pickup"?0:40;
+let delivery=method==="pickup"?0:30;
 let total=subtotal+delivery;
 
 let msg=
@@ -279,8 +355,8 @@ let msg=
 "الموبايل: "+phone+"\n"+
 "طريقة الاستلام: "+(method==="pickup"?"استلام من المحل":"توصيل للمنزل")+
 (method==="pickup"?"":"\nالعنوان: "+address)+
-"\nطريقة الدفع: كاش عند الاستلام\n\n"+
-lines.join("\n")+
+"\nطريقة الدفع: "+(payment==="cash"?"كاش عند الاستلام":"")+"\n\n"+
+lines.join("\n\n")+
 "\n\nقيمة المنتجات: "+subtotal+" جنيه"+
 "\nالتوصيل: "+delivery+" جنيه"+
 "\nالإجمالي: "+total+" جنيه"+
