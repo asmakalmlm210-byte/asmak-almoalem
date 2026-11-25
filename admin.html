@@ -19,6 +19,7 @@ input,select{background:#111;color:white}
 button{background:#ff7900;color:#111;font-weight:bold;border:0;cursor:pointer}
 button:disabled{opacity:.6;cursor:not-allowed}
 button.logout{background:#8b2525;color:white}
+button.secondary{background:#333;color:white}
 .orange{color:#ff7900}
 .muted{color:#aaa;font-size:13px}
 .order{border-right:4px solid #ff7900}
@@ -49,18 +50,19 @@ summary{cursor:pointer;color:#ff7900;padding:10px}
 
 <section id="dashboard" class="hidden">
 <div class="card">
-<div class="row">
-<div>
 <h2 class="orange">إدارة الطلبات</h2>
 <p id="count">عدد الطلبات: 0</p>
-</div>
-<div>
+
+<div class="row">
 <button onclick="loadOrders()">تحديث الطلبات</button>
+<button onclick="enableNotifications()">تفعيل صوت وإشعارات الطلبات</button>
 <button class="logout" onclick="logout()">تسجيل الخروج</button>
 </div>
-</div>
+
 <div id="message"></div>
+<p class="muted">سيتم فحص الطلبات الجديدة تلقائيًا كل 15 ثانية أثناء فتح اللوحة.</p>
 </div>
+
 <div id="orders"></div>
 </section>
 
@@ -77,8 +79,80 @@ const db = window.supabase.createClient(
 
 const $ = id => document.getElementById(id);
 
+let knownOrderIds = new Set();
+let firstLoad = true;
+let pollingTimer = null;
+let isLoading = false;
+let audioContext = null;
+
 function msg(text){
   $("message").textContent = text;
+}
+
+async function enableNotifications(){
+  try{
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if(AudioContextClass){
+      audioContext = audioContext || new AudioContextClass();
+      if(audioContext.state === "suspended"){
+        await audioContext.resume();
+      }
+    }
+
+    if("Notification" in window){
+      const permission = await Notification.requestPermission();
+
+      if(permission === "granted"){
+        msg("تم تفعيل إشعارات الطلبات والصوت بنجاح ✓");
+        playBeep();
+      }else{
+        msg("لم يتم السماح بالإشعارات. يمكنك تفعيلها من إعدادات المتصفح.");
+      }
+    }else{
+      msg("المتصفح لا يدعم إشعارات سطح المكتب، لكن التحديث التلقائي يعمل.");
+    }
+  }catch(error){
+    msg("تعذر تفعيل التنبيهات: " + error.message);
+  }
+}
+
+function playBeep(){
+  if(!audioContext) return;
+
+  try{
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.frequency.value = 880;
+    gain.gain.value = 0.15;
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.35);
+  }catch(error){
+    console.log("تعذر تشغيل الصوت",error);
+  }
+}
+
+function notifyNewOrder(order){
+  const customer = order.customer_name || "عميل جديد";
+
+  msg("🔔 وصل طلب جديد من: " + customer);
+
+  playBeep();
+
+  if("Notification" in window && Notification.permission === "granted"){
+    try{
+      new Notification("🐟 طلب جديد - أسماك المعلم",{
+        body: "طلب جديد من " + customer + " | الإجمالي: " + order.total + " جنيه"
+      });
+    }catch(error){
+      console.log(error);
+    }
+  }
 }
 
 async function login(){
@@ -115,10 +189,16 @@ async function login(){
   $("login").classList.add("hidden");
   $("dashboard").classList.remove("hidden");
 
+  firstLoad = true;
+  knownOrderIds.clear();
+
   await loadOrders();
+  startPolling();
 }
 
 async function logout(){
+  stopPolling();
+
   const {error} = await db.auth.signOut();
 
   if(error){
@@ -152,102 +232,125 @@ function addField(parent,label,value){
 }
 
 async function loadOrders(){
-  msg("جاري تحميل الطلبات...");
+  if(isLoading) return;
+  isLoading = true;
 
-  const {data:{user},error:authError} = await db.auth.getUser();
+  try{
+    const {data:{user},error:authError} = await db.auth.getUser();
 
-  if(authError || !user){
-    msg("انتهت جلسة الدخول. سجل دخولك مرة أخرى.");
-    $("dashboard").classList.add("hidden");
-    $("login").classList.remove("hidden");
-    return;
-  }
+    if(authError || !user){
+      msg("انتهت جلسة الدخول. سجل دخولك مرة أخرى.");
+      stopPolling();
+      $("dashboard").classList.add("hidden");
+      $("login").classList.remove("hidden");
+      return;
+    }
 
-  const {data,error} = await db
-    .from("orders")
-    .select("*")
-    .order("created_at",{ascending:false});
+    const {data,error} = await db
+      .from("orders")
+      .select("*")
+      .order("created_at",{ascending:false});
 
-  if(error){
-    msg("خطأ في تحميل الطلبات: " + error.message);
-    return;
-  }
+    if(error){
+      msg("خطأ في تحميل الطلبات: " + error.message);
+      return;
+    }
 
-  $("count").textContent = "عدد الطلبات: " + data.length;
-  $("orders").replaceChildren();
+    const newOrders = [];
 
-  if(!data.length){
-    $("orders").textContent = "لا توجد طلبات حتى الآن.";
-    msg("تم الاتصال بقاعدة البيانات.");
-    return;
-  }
+    data.forEach(order=>{
+      const id = String(order.id);
 
-  data.forEach(order=>{
-    const card = document.createElement("div");
-    card.className = "card order";
+      if(!firstLoad && !knownOrderIds.has(id)){
+        newOrders.push(order);
+      }
 
-    const heading = document.createElement("h3");
-    heading.className = "orange";
-    heading.textContent = "طلب رقم: " + safe(order.id);
-    card.append(heading);
-
-    const fields = document.createElement("div");
-
-    addField(fields,"اسم العميل",order.customer_name);
-    addField(fields,"رقم الهاتف",order.phone);
-    addField(fields,"العنوان",order.address);
-    addField(fields,"الإجمالي",order.total + " جنيه");
-    addField(fields,"تاريخ الطلب",order.created_at);
-    addField(fields,"تفاصيل الطلب",
-      order.items || order.order_items || order.products || "راجع بيانات الطلب بالأسفل"
-    );
-
-    const other = document.createElement("details");
-    const summary = document.createElement("summary");
-    summary.textContent = "عرض كل بيانات الطلب";
-
-    const all = document.createElement("pre");
-    const safeOrder = {...order};
-    delete safeOrder.user_id;
-    all.textContent = JSON.stringify(safeOrder,null,2);
-
-    other.append(summary,all);
-    fields.append(other);
-    card.append(fields);
-
-    const label = document.createElement("label");
-    label.textContent = "حالة الطلب";
-    card.append(label);
-
-    const select = document.createElement("select");
-
-    const statuses = [
-      ["pending","طلب جديد"],
-      ["confirmed","تم قبول الطلب"],
-      ["preparing","جاري التجهيز"],
-      ["on_the_way","خرج للتوصيل"],
-      ["delivered","تم التسليم"],
-      ["cancelled","تم الإلغاء"]
-    ];
-
-    statuses.forEach(([value,text])=>{
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = text;
-      select.append(option);
+      knownOrderIds.add(id);
     });
 
-    select.value = order.status || "pending";
+    firstLoad = false;
 
-    const save = document.createElement("button");
-    save.textContent = "حفظ حالة الطلب";
-    save.onclick = ()=>updateStatus(order.id,select.value,save);
+    $("count").textContent = "عدد الطلبات: " + data.length;
+    $("orders").replaceChildren();
 
-    card.append(select,save);
-    $("orders").append(card);
-  });
+    if(!data.length){
+      $("orders").textContent = "لا توجد طلبات حتى الآن.";
+    }else{
+      data.forEach(order=>{
+        const card = document.createElement("div");
+        card.className = "card order";
 
-  msg("تم تحميل الطلبات بنجاح ✓");
+        const heading = document.createElement("h3");
+        heading.className = "orange";
+        heading.textContent = "طلب رقم: " + safe(order.id);
+        card.append(heading);
+
+        const fields = document.createElement("div");
+
+        addField(fields,"اسم العميل",order.customer_name);
+        addField(fields,"رقم الهاتف",order.phone);
+        addField(fields,"العنوان",order.address);
+        addField(fields,"الإجمالي",order.total + " جنيه");
+        addField(fields,"تاريخ الطلب",order.created_at);
+        addField(fields,"تفاصيل الطلب",
+          order.items || order.order_items || order.products || "راجع بيانات الطلب بالأسفل"
+        );
+
+        const other = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = "عرض كل بيانات الطلب";
+
+        const all = document.createElement("pre");
+        const safeOrder = {...order};
+        delete safeOrder.user_id;
+        all.textContent = JSON.stringify(safeOrder,null,2);
+
+        other.append(summary,all);
+        fields.append(other);
+        card.append(fields);
+
+        const label = document.createElement("label");
+        label.textContent = "حالة الطلب";
+        card.append(label);
+
+        const select = document.createElement("select");
+
+        const statuses = [
+          ["pending","طلب جديد"],
+          ["confirmed","تم قبول الطلب"],
+          ["preparing","جاري التجهيز"],
+          ["on_the_way","خرج للتوصيل"],
+          ["delivered","تم التسليم"],
+          ["cancelled","تم الإلغاء"]
+        ];
+
+        statuses.forEach(([value,text])=>{
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = text;
+          select.append(option);
+        });
+
+        select.value = order.status || "pending";
+
+        const save = document.createElement("button");
+        save.textContent = "حفظ حالة الطلب";
+        save.onclick = ()=>updateStatus(order.id,select.value,save);
+
+        card.append(select,save);
+        $("orders").append(card);
+      });
+    }
+
+    if(newOrders.length){
+      newOrders.reverse().forEach(notifyNewOrder);
+    }else{
+      msg("تم تحديث الطلبات ✓");
+    }
+
+  }finally{
+    isLoading = false;
+  }
 }
 
 async function updateStatus(id,status,button){
@@ -271,8 +374,24 @@ async function updateStatus(id,status,button){
   await loadOrders();
 }
 
+function startPolling(){
+  stopPolling();
+
+  pollingTimer = setInterval(()=>{
+    loadOrders();
+  },15000);
+}
+
+function stopPolling(){
+  if(pollingTimer){
+    clearInterval(pollingTimer);
+    pollingTimer = null;
+  }
+}
+
 db.auth.onAuthStateChange((event,session)=>{
   if(event === "SIGNED_OUT"){
+    stopPolling();
     $("dashboard").classList.add("hidden");
     $("login").classList.remove("hidden");
   }
@@ -284,7 +403,12 @@ async function checkSession(){
   if(session){
     $("login").classList.add("hidden");
     $("dashboard").classList.remove("hidden");
+
+    firstLoad = true;
+    knownOrderIds.clear();
+
     await loadOrders();
+    startPolling();
   }
 }
 
