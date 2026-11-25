@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ff7900">
+<title>لوحة تحكم أسماك المعلم</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
+header{background:#191919;padding:20px;text-align:center;border-bottom:3px solid #ff7900}
+h1{color:#ff7900;margin:0 0 8px}
+.container{max-width:1000px;margin:auto;padding:16px}
+.card{background:#1d1d1d;padding:18px;border-radius:14px;margin:15px 0;border:1px solid #333}
+input,button,select{width:100%;padding:13px;margin:7px 0;border-radius:8px;border:1px solid #444;font-size:16px}
+input,select{background:#111;color:white}
+button{background:#ff7900;color:#111;font-weight:bold;border:0;cursor:pointer}
+button.secondary{background:#333;color:white}
+button.logout{background:#8b2525;color:white}
+.orange{color:#ff7900}
+.muted{color:#aaa;font-size:13px}
+.order{border-right:4px solid #ff7900}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:120px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ddd;background:#111;padding:12px;border-radius:8px}
+.hidden{display:none}
+#message{padding:12px;color:#ffb36b}
+</style>
+</head>
+<body>
+<header>
+<h1>🐟 أسماك المعلم</h1>
+<div>لوحة إدارة الطلبات</div>
+</header>
+
+<div class="container">
+
+<section id="login" class="card">
+<h2 class="orange">دخول المدير</h2>
+<input id="email" type="email" placeholder="البريد الإلكتروني">
+<input id="password" type="password" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل الدخول</button>
+<div id="loginMsg" class="muted"></div>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<div class="row">
+<div>
+<h2 class="orange">إدارة الطلبات</h2>
+<p id="count">الطلبات: 0</p>
+</div>
+<div>
+<button onclick="loadOrders()">تحديث الطلبات</button>
+<button class="logout" onclick="logout()">تسجيل الخروج</button>
+</div>
+</div>
+<div id="message"></div>
+</div>
+
+<div id="orders"></div>
+</section>
+</div>
+
+<script>
+const SUPABASE_URL = "ضع رابط مشروع Supabase هنا";
+const SUPABASE_ANON_KEY = "ضع مفتاح Publishable أو anon هنا";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+function msg(text){
+  $("message").textContent = text;
+}
+
+async function login(){
+  const email = $("email").value.trim();
+  const password = $("password").value;
+
+  $("loginMsg").textContent = "جاري تسجيل الدخول...";
+
+  const {data,error} = await db.auth.signInWithPassword({
+    email,password
+  });
+
+  if(error){
+    $("loginMsg").textContent = "تعذر الدخول: " + error.message;
+    return;
+  }
+
+  $("login").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  await loadOrders();
+}
+
+async function logout(){
+  await db.auth.signOut();
+  $("dashboard").classList.add("hidden");
+  $("login").classList.remove("hidden");
+}
+
+function safe(value){
+  if(value === null || value === undefined) return "—";
+  if(typeof value === "object") return JSON.stringify(value,null,2);
+  return String(value);
+}
+
+function addField(parent,label,value){
+  const div=document.createElement("div");
+  const title=document.createElement("strong");
+  title.className="orange";
+  title.textContent=label;
+  const content=document.createElement("pre");
+  content.textContent=safe(value);
+  div.append(title,content);
+  parent.append(div);
+}
+
+async function loadOrders(){
+  msg("جاري تحميل الطلبات...");
+
+  const {data:{user},error:authError}=await db.auth.getUser();
+
+  if(authError || !user){
+    msg("انتهت جلسة الدخول. سجل دخولك مرة أخرى.");
+    return;
+  }
+
+  const {data,error}=await db
+    .from("orders")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    msg("خطأ في تحميل الطلبات: "+error.message);
+    return;
+  }
+
+  $("count").textContent="عدد الطلبات: "+data.length;
+  $("orders").replaceChildren();
+
+  if(!data.length){
+    $("orders").textContent="لا توجد طلبات حتى الآن.";
+    msg("");
+    return;
+  }
+
+  data.forEach(order=>{
+    const card=document.createElement("div");
+    card.className="card order";
+
+    const heading=document.createElement("h3");
+    heading.textContent="طلب رقم: "+safe(order.id);
+    card.append(heading);
+
+    const fields=document.createElement("div");
+    addField(fields,"اسم العميل",order.customer_name);
+    addField(fields,"رقم الهاتف",order.phone);
+    addField(fields,"العنوان",order.address);
+    addField(fields,"الإجمالي",order.total+" جنيه");
+    addField(fields,"تاريخ الطلب",order.created_at);
+    addField(fields,"تفاصيل الطلب",order.items || order.order_items || order.products || "راجع بيانات الطلب بالأسفل");
+
+    const other=document.createElement("details");
+    const summary=document.createElement("summary");
+    summary.textContent="عرض كل بيانات الطلب";
+    const all=document.createElement("pre");
+    const safeOrder={...order};
+    delete safeOrder.user_id;
+    all.textContent=JSON.stringify(safeOrder,null,2);
+    other.append(summary,all);
+    fields.append(other);
+    card.append(fields);
+
+    const label=document.createElement("label");
+    label.textContent="حالة الطلب";
+    card.append(label);
+
+    const select=document.createElement("select");
+
+    const statuses=[
+      ["pending","طلب جديد"],
+      ["confirmed","تم قبول الطلب"],
+      ["preparing","جاري التجهيز"],
+      ["on_the_way","خرج للتوصيل"],
+      ["delivered","تم التسليم"],
+      ["cancelled","تم الإلغاء"]
+    ];
+
+    statuses.forEach(([value,text])=>{
+      const option=document.createElement("option");
+      option.value=value;
+      option.textContent=text;
+      select.append(option);
+    });
+
+    select.value=order.status || "pending";
+
+    const save=document.createElement("button");
+    save.textContent="حفظ حالة الطلب";
+    save.onclick=()=>updateStatus(order.id,select.value,save);
+
+    card.append(select,save);
+    $("orders").append(card);
+  });
+
+  msg("تم تحميل الطلبات بنجاح");
+}
+
+async function updateStatus(id,status,button){
+  button.disabled=true;
+  button.textContent="جاري الحفظ...";
+
+  const {error}=await db
+    .from("orders")
+    .update({status:status})
+    .eq("id",id);
+
+  if(error){
+    msg("فشل تحديث الحالة: "+error.message);
+    button.textContent="حفظ حالة الطلب";
+    button.disabled=false;
+    return;
+  }
+
+  msg("تم تحديث حالة الطلب بنجاح");
+  button.textContent="تم الحفظ ✓";
+  await loadOrders();
+}
+
+db.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT"){
+    $("dashboard").classList.add("hidden");
+    $("login").classList.remove("hidden");
+  }
+});
+</script>
+</body>
+</html>
