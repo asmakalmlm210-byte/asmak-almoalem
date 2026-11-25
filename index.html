@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ff7900">
-<meta name="description" content="أسماك المعلم - أسماك طازجة وطلبات أونلاين">
+<meta name="description" content="أسماك المعلم - طلبات أسماك أونلاين">
 <link rel="manifest" href="./manifest.json">
 <title>أسماك المعلم</title>
 
@@ -18,7 +18,7 @@ header h1{color:#ff7900;font-size:32px;margin:8px}
 nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:16px;background:#181818}
 nav a{color:white;text-decoration:none;font-weight:bold}
 .hero{text-align:center;padding:38px 15px;background:linear-gradient(135deg,#292929,#111)}
-.hero h2{color:#ff7900}
+.hero h2,.checkout h2{color:#ff7900}
 .btn{display:inline-block;background:#ff7900;color:#111;border:0;padding:13px 20px;border-radius:9px;font-weight:bold;cursor:pointer;text-decoration:none}
 .section{text-align:center;color:#ff7900;margin:30px 10px}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;padding:14px}
@@ -33,7 +33,6 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 .cart-item{padding:12px 0;border-bottom:1px solid #555;line-height:1.9}
 .cart-item button{padding:7px 12px;margin:3px;border:0;border-radius:6px;cursor:pointer}
 .total{color:#ff7900;font-size:22px;font-weight:bold;line-height:2}
-.checkout h2{color:#ff7900}
 .checkout label{display:block;margin-top:13px}
 #addressBox{display:none}
 .note{color:#ffb66d;font-size:13px;line-height:1.7}
@@ -41,14 +40,7 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 footer{text-align:center;padding:20px;color:#aaa}
 #installBtn{display:none;margin:12px auto}
 .offer-section{padding:18px 14px}
-.offer-card{
-background:linear-gradient(145deg,#292018,#151515);
-border:2px solid #ff7900;
-border-radius:18px;
-padding:20px 15px;
-text-align:center;
-box-shadow:0 5px 22px #ff790022;
-}
+.offer-card{background:linear-gradient(145deg,#292018,#151515);border:2px solid #ff7900;border-radius:18px;padding:20px 15px;text-align:center;box-shadow:0 5px 22px #ff790022}
 .offer-tag{display:inline-block;background:#ff7900;color:#111;padding:8px 17px;border-radius:30px;font-weight:bold;margin-bottom:12px}
 .offer-image{font-size:65px;margin:10px}
 .offer-card h2{color:#ff7900;font-size:26px}
@@ -180,8 +172,8 @@ box-shadow:0 5px 22px #ff790022;
 <label>ملاحظات إضافية (اختياري)</label>
 <textarea id="notes" rows="2" placeholder="أي تفاصيل تحب تبلغنا بيها"></textarea>
 
-<p class="note">يرجى مراجعة بياناتك والطلب قبل الإرسال. سيتم تأكيد الطلب من المحل عبر واتساب.</p>
-<button class="btn" style="width:100%;margin-top:15px" onclick="checkout()">تأكيد الطلب وإرسال واتساب 📲</button>
+<p class="note">يرجى مراجعة بياناتك والطلب قبل الإرسال. سيتم تسجيل الطلب وإرساله للمحل عبر واتساب.</p>
+<button class="btn" id="orderBtn" style="width:100%;margin-top:15px" onclick="checkout()">تأكيد الطلب وإرسال واتساب 📲</button>
 </section>
 
 <section class="info" id="contact">
@@ -193,7 +185,19 @@ box-shadow:0 5px 22px #ff790022;
 
 <footer>جميع الحقوق محفوظة © أسماك المعلم</footer>
 
+<!-- مكتبة Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+// بيانات ربط قاعدة البيانات
+const SUPABASE_URL = "https://dfotlxvhsbolwrzftpjw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_tpnUVB28iFXyApnNpZQDPw_H94MkDaC";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 const products=[
 {name:"سمك بلطي",price:90},
 {name:"جمبري",price:350},
@@ -289,7 +293,7 @@ document.getElementById("delivery").textContent=delivery;
 document.getElementById("total").textContent=subtotal+delivery;
 }
 
-function checkout(){
+async function checkout(){
 if(!cart.length){
 alert("السلة فارغة، اختار منتجات الأول");
 return;
@@ -319,37 +323,72 @@ return;
 
 let subtotal=0;
 
-let lines=cart.map(item=>{
+let orderItems=cart.map(item=>{
 let p=products[item.id];
 let cost=p.price*item.qty;
 subtotal+=cost;
 
-if(p.offer){
-return `🔥 ${p.name}\nالكمية: ${item.qty} عرض\n2 كيلو جمبري + طبقين رز هدية\nالسعر: ${cost} جنيه`;
-}
-
-return `• ${p.name}: ${item.qty} كيلو - ${item.prep} - ${cost} جنيه`;
+return {
+product_name:p.name,
+quantity:item.qty,
+unit_price:p.price,
+preparation:item.prep,
+details:p.offer?"2 كيلو جمبري + طبقين رز هدية":"",
+item_total:cost
+};
 });
 
 let delivery=method==="pickup"?0:40;
 let total=subtotal+delivery;
 
-let msg=
+let orderMessage=
 "طلب جديد من موقع أسماك المعلم 🐟\n"+
 "الاسم: "+name+"\n"+
 "الموبايل: "+phone+"\n"+
 "طريقة الاستلام: "+(method==="pickup"?"استلام من المحل":"توصيل للمنزل")+
 (method==="pickup"?"":"\nالعنوان: "+address)+
-"\nطريقة الدفع: "+(payment==="cash"?"كاش عند الاستلام":"")+"\n\n"+
-lines.join("\n\n")+
+"\nطريقة الدفع: كاش عند الاستلام\n\n"+
+orderItems.map(item=>
+"• "+item.product_name+
+" - الكمية: "+item.quantity+
+(item.product_name.includes("عرض الخميس")?" عرض":" كيلو")+
+" - "+item.preparation+
+" - "+item.item_total+" جنيه"
+).join("\n")+
 "\n\nقيمة المنتجات: "+subtotal+" جنيه"+
 "\nالتوصيل: "+delivery+" جنيه"+
 "\nالإجمالي: "+total+" جنيه"+
-(notes?"\nملاحظات: "+notes:"")+
-"\nبرجاء تأكيد الطلب.";
+(notes?"\nملاحظات: "+notes:"");
 
-let url="https://wa.me/201227221028?text="+encodeURIComponent(msg);
-window.open(url,"_blank");
+let btn=document.getElementById("orderBtn");
+btn.disabled=true;
+btn.textContent="جاري تسجيل الطلب...";
+
+try{
+const {error}=await db.from("orders").insert({
+customer_name:name,
+phone:phone,
+address:method==="pickup"?"استلام من المحل":address,
+items:orderItems,
+total:total,
+status:"pending"
+});
+
+if(error)throw error;
+
+alert("تم تسجيل طلبك بنجاح في أسماك المعلم ❤️");
+
+let url="https://wa.me/201227221028?text="+
+encodeURIComponent(orderMessage);
+
+window.location.href=url;
+
+}catch(error){
+console.error("Supabase order error:",error);
+alert("لم نتمكن من تسجيل الطلب في قاعدة البيانات.\nالسبب: "+(error.message||"خطأ غير معروف")+"\nمن فضلك ابعت رسالة للمحل للتأكد من الطلب.");
+btn.disabled=false;
+btn.textContent="تأكيد الطلب وإرسال واتساب 📲";
+}
 }
 
 updateDelivery();
