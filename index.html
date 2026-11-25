@@ -9,6 +9,8 @@
 <link rel="manifest" href="./manifest.json">
 <title>أسماك المعلم</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -29,7 +31,7 @@ nav a{color:white;text-decoration:none;font-weight:bold}
 small{color:#bbb}
 input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color:white;border:1px solid #555;border-radius:7px;font-size:15px}
 .card .btn{width:100%;margin-top:8px}
-.cart,.checkout{margin:18px 14px;padding:18px;background:#202020;border:1px solid #ff7900;border-radius:12px}
+.cart,.checkout,.tracking{margin:18px 14px;padding:18px;background:#202020;border:1px solid #ff7900;border-radius:12px}
 .cart-item{padding:12px 0;border-bottom:1px solid #555;line-height:1.9}
 .cart-item button{padding:7px 12px;margin:3px;border:0;border-radius:6px;cursor:pointer}
 .total{color:#ff7900;font-size:22px;font-weight:bold;line-height:2}
@@ -48,6 +50,12 @@ footer{text-align:center;padding:20px;color:#aaa}
 .offer-price{font-size:32px;font-weight:bold;color:#ff7900;margin:12px}
 .offer-gift{color:#ffb66d;font-weight:bold}
 .offer-card .btn{width:100%;margin-top:10px}
+.tracking h2{color:#ff7900}
+.tracking-result{background:#111;border:1px solid #444;padding:15px;border-radius:10px;margin-top:15px;line-height:2}
+.tracking-code{font-size:19px;color:#ffad42;font-weight:bold;direction:ltr;display:block;overflow-wrap:anywhere}
+.status-result{font-size:20px;color:#ff7900;font-weight:bold}
+.track-button{width:100%;margin-top:10px}
+.success-box{display:none;background:#171717;border:1px solid #ff7900;padding:15px;border-radius:12px;margin-top:15px;line-height:2}
 </style>
 </head>
 
@@ -63,6 +71,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <a href="#offers">العروض 🔥</a>
 <a href="#products">المنتجات</a>
 <a href="#cart">السلة 🛒</a>
+<a href="#track">متابعة الطلب</a>
 <a href="#contact">تواصل معنا</a>
 </nav>
 
@@ -172,8 +181,24 @@ footer{text-align:center;padding:20px;color:#aaa}
 <label>ملاحظات إضافية (اختياري)</label>
 <textarea id="notes" rows="2" placeholder="أي تفاصيل تحب تبلغنا بيها"></textarea>
 
-<p class="note">يرجى مراجعة بياناتك والطلب قبل الإرسال. سيتم تسجيل الطلب وإرساله للمحل عبر واتساب.</p>
+<p class="note">يرجى مراجعة بياناتك والطلب قبل الإرسال.</p>
 <button class="btn" id="orderBtn" style="width:100%;margin-top:15px" onclick="checkout()">تأكيد الطلب وإرسال واتساب 📲</button>
+
+<div class="success-box" id="successBox">
+<h3 class="orange">🎉 تم تسجيل طلبك بنجاح!</h3>
+<p>احتفظ بكود المتابعة ده علشان تعرف طلبك وصل لفين:</p>
+<span class="tracking-code" id="newTrackingCode"></span>
+<button class="btn" onclick="copyTrackingCode()">نسخ كود المتابعة</button>
+<button class="btn" onclick="sendOrderWhatsApp()">إرسال الطلب واتساب</button>
+</div>
+</section>
+
+<section class="tracking" id="track">
+<h2>🔎 تابع طلبك</h2>
+<p class="note">اكتب كود المتابعة اللي ظهرلك بعد تسجيل الطلب.</p>
+<input id="trackingInput" placeholder="كود متابعة الطلب" dir="ltr">
+<button class="btn track-button" id="trackButton" onclick="trackOrder()">عرض حالة الطلب</button>
+<div id="trackingResult"></div>
 </section>
 
 <section class="info" id="contact">
@@ -185,11 +210,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 
 <footer>جميع الحقوق محفوظة © أسماك المعلم</footer>
 
-<!-- مكتبة Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-// بيانات ربط قاعدة البيانات
 const SUPABASE_URL = "https://dfotlxvhsbolwrzftpjw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tpnUVB28iFXyApnNpZQDPw_H94MkDaC";
 
@@ -207,7 +228,18 @@ const products=[
 {name:"عرض الخميس: 2 كيلو جمبري + طبقين رز هدية",price:700,offer:true}
 ];
 
+const statusNames={
+pending:"تم استلام طلبك 🟠",
+confirmed:"تم قبول الطلب ✅",
+preparing:"جاري تجهيز طلبك 👨‍🍳",
+on_the_way:"طلبك خرج للتوصيل 🛵",
+delivered:"تم تسليم الطلب 🎉",
+cancelled:"تم إلغاء الطلب"
+};
+
 let cart=[];
+let lastWhatsAppMessage="";
+let lastTrackingCode="";
 
 function add(id){
 let qty=Number(document.getElementById("q"+id).value);
@@ -304,7 +336,6 @@ let phone=document.getElementById("phone").value.trim();
 let method=document.getElementById("method").value;
 let address=document.getElementById("address").value.trim();
 let notes=document.getElementById("notes").value.trim();
-let payment=document.getElementById("payment").value;
 
 if(!name||!phone){
 alert("من فضلك اكتب الاسم ورقم الموبايل");
@@ -318,6 +349,11 @@ return;
 
 if(method==="delivery"&&!address){
 alert("اكتب عنوان التوصيل بالتفصيل");
+return;
+}
+
+if(!window.crypto || !crypto.randomUUID){
+alert("المتصفح لا يدعم إنشاء كود المتابعة. افتح الموقع من متصفح حديث.");
 return;
 }
 
@@ -340,6 +376,7 @@ item_total:cost
 
 let delivery=method==="pickup"?0:40;
 let total=subtotal+delivery;
+let trackingCode=crypto.randomUUID();
 
 let orderMessage=
 "طلب جديد من موقع أسماك المعلم 🐟\n"+
@@ -358,6 +395,7 @@ orderItems.map(item=>
 "\n\nقيمة المنتجات: "+subtotal+" جنيه"+
 "\nالتوصيل: "+delivery+" جنيه"+
 "\nالإجمالي: "+total+" جنيه"+
+"\nكود متابعة الطلب: "+trackingCode+
 (notes?"\nملاحظات: "+notes:"");
 
 let btn=document.getElementById("orderBtn");
@@ -371,23 +409,111 @@ phone:phone,
 address:method==="pickup"?"استلام من المحل":address,
 items:orderItems,
 total:total,
-status:"pending"
+status:"pending",
+tracking_code:trackingCode
 });
 
 if(error)throw error;
 
-alert("تم تسجيل طلبك بنجاح في أسماك المعلم ❤️");
+lastTrackingCode=trackingCode;
+lastWhatsAppMessage=orderMessage;
 
-let url="https://wa.me/201227221028?text="+
-encodeURIComponent(orderMessage);
+document.getElementById("newTrackingCode").textContent=trackingCode;
+document.getElementById("successBox").style.display="block";
+document.getElementById("successBox").scrollIntoView({behavior:"smooth"});
 
-window.location.href=url;
+cart=[];
+render();
+
+alert("تم تسجيل طلبك بنجاح ❤️ احتفظ بكود المتابعة الظاهر في الموقع.");
 
 }catch(error){
 console.error("Supabase order error:",error);
-alert("لم نتمكن من تسجيل الطلب في قاعدة البيانات.\nالسبب: "+(error.message||"خطأ غير معروف")+"\nمن فضلك ابعت رسالة للمحل للتأكد من الطلب.");
+alert("لم نتمكن من تسجيل الطلب.\nالسبب: "+(error.message||"خطأ غير معروف"));
+}finally{
 btn.disabled=false;
 btn.textContent="تأكيد الطلب وإرسال واتساب 📲";
+}
+}
+
+function copyTrackingCode(){
+if(!lastTrackingCode)return;
+
+if(navigator.clipboard && navigator.clipboard.writeText){
+navigator.clipboard.writeText(lastTrackingCode)
+.then(()=>alert("تم نسخ كود المتابعة ❤️"))
+.catch(()=>alert("انسخ الكود يدويًا: "+lastTrackingCode));
+}else{
+alert("كود المتابعة: "+lastTrackingCode);
+}
+}
+
+function sendOrderWhatsApp(){
+if(!lastWhatsAppMessage)return;
+
+const url="https://wa.me/201227221028?text="+
+encodeURIComponent(lastWhatsAppMessage);
+
+window.open(url,"_blank");
+}
+
+async function trackOrder(){
+const input=document.getElementById("trackingInput");
+const button=document.getElementById("trackButton");
+const result=document.getElementById("trackingResult");
+
+const code=input.value.trim().toLowerCase();
+
+if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(code)){
+result.textContent="من فضلك اكتب كود متابعة صحيح.";
+return;
+}
+
+button.disabled=true;
+button.textContent="جاري البحث...";
+result.textContent="";
+
+try{
+const {data,error}=await db.rpc("track_order",{
+p_tracking_code:code
+});
+
+if(error)throw error;
+
+if(!data){
+result.textContent="لم يتم العثور على طلب بهذا الكود. راجع الكود وحاول مرة أخرى.";
+return;
+}
+
+const box=document.createElement("div");
+box.className="tracking-result";
+
+const title=document.createElement("h3");
+title.className="orange";
+title.textContent="تفاصيل طلبك";
+
+const orderId=document.createElement("p");
+orderId.textContent="رقم الطلب: "+data.id;
+
+const status=document.createElement("p");
+status.className="status-result";
+status.textContent=statusNames[data.status]||data.status||"حالة غير معروفة";
+
+const total=document.createElement("p");
+total.textContent="إجمالي الطلب: "+data.total+" جنيه";
+
+const date=document.createElement("p");
+date.textContent="تاريخ الطلب: "+(data.created_at?new Date(data.created_at).toLocaleString("ar-EG"):"غير متاح");
+
+box.append(title,orderId,status,total,date);
+result.append(box);
+
+}catch(error){
+console.error(error);
+result.textContent="حصل خطأ أثناء البحث: "+error.message;
+}finally{
+button.disabled=false;
+button.textContent="عرض حالة الطلب";
 }
 }
 
