@@ -5,10 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ff7900">
-<meta name="description" content="أسماك المعلم - طلبات أسماك أونلاين">
+<meta name="description" content="أسماك المعلم - أسماك طازجة وصواني ووجبات وطلبات أونلاين">
 <link rel="manifest" href="./manifest.json">
 <title>أسماك المعلم</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -22,6 +21,7 @@ nav a{color:white;text-decoration:none;font-weight:bold}
 .hero{text-align:center;padding:38px 15px;background:linear-gradient(135deg,#292929,#111)}
 .hero h2,.checkout h2{color:#ff7900}
 .btn{display:inline-block;background:#ff7900;color:#111;border:0;padding:13px 20px;border-radius:9px;font-weight:bold;cursor:pointer;text-decoration:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .section{text-align:center;color:#ff7900;margin:30px 10px}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;padding:14px}
 .card{background:#202020;border:1px solid #444;border-radius:13px;padding:16px 10px;text-align:center}
@@ -56,6 +56,17 @@ footer{text-align:center;padding:20px;color:#aaa}
 .status-result{font-size:20px;color:#ff7900;font-weight:bold}
 .track-button{width:100%;margin-top:10px}
 .success-box{display:none;background:#171717;border:1px solid #ff7900;padding:15px;border-radius:12px;margin-top:15px;line-height:2}
+.meals-section{padding:10px 14px 25px}
+.meals-intro{text-align:center;color:#ddd;line-height:1.9;margin-bottom:18px}
+.meal-card{background:linear-gradient(145deg,#292018,#171717);border:1px solid #ff7900;border-radius:15px;padding:15px;text-align:center}
+.meal-icon{font-size:48px}
+.meal-card h3{color:#ff8a19;margin:8px}
+.meal-prices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+.meal-price{background:#111;border:1px solid #555;border-radius:9px;padding:9px;font-size:14px}
+.meal-price strong{display:block;color:#ff7900;font-size:19px;margin-top:4px}
+.meal-card label{display:block;text-align:right;color:#ffb66d;margin-top:8px;font-size:14px}
+.meal-card .btn{width:100%;margin-top:10px}
+.rice-note{text-align:center;color:#ffb66d;font-size:13px;margin:10px}
 </style>
 </head>
 
@@ -70,6 +81,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <a href="#home">الرئيسية</a>
 <a href="#offers">العروض 🔥</a>
 <a href="#products">المنتجات</a>
+<a href="#meals">الصواني والوجبات 🍽️</a>
 <a href="#cart">السلة 🛒</a>
 <a href="#track">متابعة الطلب</a>
 <a href="#contact">تواصل معنا</a>
@@ -143,6 +155,75 @@ footer{text-align:center;padding:20px;color:#aaa}
 
 </section>
 
+<h2 class="section" id="meals">🍽️ صواني ووجبات المعلم</h2>
+<section class="meals-section">
+<p class="meals-intro">
+اختار صينيتك أو وجبتك بالحجم اللي يناسبك ❤️<br>
+والرز متاح كإضافة اختيارية بـ30 جنيه للطبق.
+</p>
+
+<section class="products">
+
+<div class="meal-card">
+<div class="meal-icon">🍤</div>
+<h3>صينية جمبري</h3>
+<div class="meal-prices">
+<div class="meal-price">فردي<strong>180 جنيه</strong></div>
+<div class="meal-price">عائلي<strong>450 جنيه</strong></div>
+</div>
+<label for="size5">اختار الحجم</label>
+<select id="size5"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice5">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice5" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(5)">أضف للسلة 🛒</button>
+</div>
+
+<div class="meal-card">
+<div class="meal-icon">🐟</div>
+<h3>صينية سمك بالفرن</h3>
+<div class="meal-prices">
+<div class="meal-price">فردي<strong>60 جنيه</strong></div>
+<div class="meal-price">عائلي<strong>110 جنيه</strong></div>
+</div>
+<label for="size6">اختار الحجم</label>
+<select id="size6"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice6">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice6" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(6)">أضف للسلة 🛒</button>
+</div>
+
+<div class="meal-card">
+<div class="meal-icon">🍤</div>
+<h3>وجبة جمبري مقلي</h3>
+<div class="meal-prices">
+<div class="meal-price">فردي<strong>100 جنيه</strong></div>
+<div class="meal-price">عائلي<strong>250 جنيه</strong></div>
+</div>
+<label for="size7">اختار الحجم</label>
+<select id="size7"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice7">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice7" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(7)">أضف للسلة 🛒</button>
+</div>
+
+<div class="meal-card">
+<div class="meal-icon">🐟</div>
+<h3>وجبة سمك مقلي</h3>
+<div class="meal-prices">
+<div class="meal-price">فردي<strong>70 جنيه</strong></div>
+<div class="meal-price">عائلي<strong>110 جنيه</strong></div>
+</div>
+<label for="size8">اختار الحجم</label>
+<select id="size8"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice8">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice8" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(8)">أضف للسلة 🛒</button>
+</div>
+
+</section>
+<p class="rice-note">🍚 طبق الرز الإضافي بـ30 جنيه، وينفع مع كل الصواني والوجبات.</p>
+</section>
+
 <section class="cart" id="cart">
 <h2 style="color:#ff7900">🛒 سلة مشترياتك</h2>
 <div id="items">السلة فارغة ❤️</div>
@@ -185,7 +266,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <button class="btn" id="orderBtn" style="width:100%;margin-top:15px" onclick="checkout()">تأكيد الطلب وإرسال واتساب 📲</button>
 
 <div class="success-box" id="successBox">
-<h3 class="orange">🎉 تم تسجيل طلبك بنجاح!</h3>
+<h3>🎉 تم تسجيل طلبك بنجاح!</h3>
 <p>احتفظ بكود المتابعة ده علشان تعرف طلبك وصل لفين:</p>
 <span class="tracking-code" id="newTrackingCode"></span>
 <button class="btn" onclick="copyTrackingCode()">نسخ كود المتابعة</button>
@@ -214,10 +295,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 const SUPABASE_URL = "https://dfotlxvhsbolwrzftpjw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tpnUVB28iFXyApnNpZQDPw_H94MkDaC";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const products=[
 {name:"سمك بلطي",price:90},
@@ -225,7 +303,11 @@ const products=[
 {name:"كابوريا",price:200},
 {name:"فسيخ",price:320},
 {name:"رنجة",price:180},
-{name:"عرض الخميس: 2 كيلو جمبري + طبقين رز هدية",price:700,offer:true}
+{name:"عرض الخميس: 2 كيلو جمبري + طبقين رز هدية",price:700,offer:true},
+{name:"صينية جمبري",meal:true,individual:180,family:450},
+{name:"صينية سمك بالفرن",meal:true,individual:60,family:110},
+{name:"وجبة جمبري مقلي",meal:true,individual:100,family:250},
+{name:"وجبة سمك مقلي",meal:true,individual:70,family:110}
 ];
 
 const statusNames={
@@ -251,7 +333,6 @@ return;
 }
 
 let found=cart.find(x=>x.id===id&&x.prep===prep);
-
 if(found)found.qty+=qty;
 else cart.push({id,qty,prep});
 
@@ -269,13 +350,32 @@ alert("تمت إضافة عرض الخميس للسلة ❤️");
 document.getElementById("cart").scrollIntoView({behavior:"smooth"});
 }
 
+function addMeal(id){
+let size=document.getElementById("size"+id).value;
+let rice=Number(document.getElementById("rice"+id).value);
+
+if(!Number.isInteger(rice)||rice<0){
+alert("اكتب عدد أطباق رز صحيح");
+return;
+}
+
+let found=cart.find(x=>x.id===id&&x.size===size&&x.rice===rice);
+if(found)found.qty+=1;
+else cart.push({id,qty:1,size,rice,prep:""});
+
+render();
+alert("تمت إضافة الصنف للسلة ❤️");
+document.getElementById("cart").scrollIntoView({behavior:"smooth"});
+}
+
 function removeItem(i){
 cart.splice(i,1);
 render();
 }
 
 function changeQty(i,amount){
-cart[i].qty+=amount;
+let p=products[cart[i].id];
+cart[i].qty+=p.meal?amount:amount;
 if(cart[i].qty<=0)cart.splice(i,1);
 render();
 }
@@ -286,15 +386,37 @@ document.getElementById("addressBox").style.display=pickup?"none":"block";
 render();
 }
 
+function getItemCost(item){
+let p=products[item.id];
+if(p.meal){
+let base=item.size==="family"?p.family:p.individual;
+return (base+(item.rice*30))*item.qty;
+}
+return p.price*item.qty;
+}
+
 function render(){
 let html="",subtotal=0;
 
 cart.forEach((item,i)=>{
 let p=products[item.id];
-let cost=p.price*item.qty;
+let cost=getItemCost(item);
 subtotal+=cost;
 
-if(p.offer){
+if(p.meal){
+let sizeName=item.size==="family"?"عائلي":"فردي";
+html+=`<div class="cart-item">
+<strong>${p.name}</strong><br>
+الحجم: ${sizeName}<br>
+الكمية: ${item.qty}<br>
+أطباق الرز الإضافية لكل وحدة: ${item.rice} طبق<br>
+سعر الوحدة مع الرز: ${(item.size==="family"?p.family:p.individual)+(item.rice*30)} جنيه<br>
+الإجمالي: ${cost} جنيه<br>
+<button onclick="changeQty(${i},-1)">➖</button>
+<button onclick="changeQty(${i},1)">➕</button>
+<button onclick="removeItem(${i})">حذف 🗑️</button>
+</div>`;
+}else if(p.offer){
 html+=`<div class="cart-item">
 <strong>🔥 ${p.name}</strong><br>
 الكمية: ${item.qty} عرض<br>
@@ -318,7 +440,6 @@ html+=`<div class="cart-item">
 });
 
 let delivery=document.getElementById("method").value==="pickup"?0:40;
-
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
 document.getElementById("delivery").textContent=delivery;
@@ -352,7 +473,7 @@ alert("اكتب عنوان التوصيل بالتفصيل");
 return;
 }
 
-if(!window.crypto || !crypto.randomUUID){
+if(!window.crypto||!crypto.randomUUID){
 alert("المتصفح لا يدعم إنشاء كود المتابعة. افتح الموقع من متصفح حديث.");
 return;
 }
@@ -361,15 +482,28 @@ let subtotal=0;
 
 let orderItems=cart.map(item=>{
 let p=products[item.id];
-let cost=p.price*item.qty;
+let cost=getItemCost(item);
 subtotal+=cost;
+
+let preparation=item.prep||"";
+let details="";
+
+if(p.meal){
+let sizeName=item.size==="family"?"عائلي":"فردي";
+let unitBase=item.size==="family"?p.family:p.individual;
+preparation="الحجم: "+sizeName;
+details="عدد أطباق الرز الإضافية لكل وحدة: "+item.rice+
+" - سعر الوحدة: "+(unitBase+item.rice*30)+" جنيه";
+}else if(p.offer){
+details="2 كيلو جمبري + طبقين رز هدية";
+}
 
 return {
 product_name:p.name,
 quantity:item.qty,
-unit_price:p.price,
-preparation:item.prep,
-details:p.offer?"2 كيلو جمبري + طبقين رز هدية":"",
+unit_price:p.meal?(item.size==="family"?p.family:p.individual)+(item.rice*30):p.price,
+preparation:preparation,
+details:details,
 item_total:cost
 };
 });
@@ -388,8 +522,10 @@ let orderMessage=
 orderItems.map(item=>
 "• "+item.product_name+
 " - الكمية: "+item.quantity+
-(item.product_name.includes("عرض الخميس")?" عرض":" كيلو")+
-" - "+item.preparation+
+(item.product_name.includes("عرض الخميس")?" عرض":
+(item.product_name.includes("صينية")||item.product_name.includes("وجبة")?" وحدة":" كيلو"))+
+(item.preparation?" - "+item.preparation:"")+
+(item.details?" - "+item.details:"")+
 " - "+item.item_total+" جنيه"
 ).join("\n")+
 "\n\nقيمة المنتجات: "+subtotal+" جنيه"+
@@ -438,8 +574,7 @@ btn.textContent="تأكيد الطلب وإرسال واتساب 📲";
 
 function copyTrackingCode(){
 if(!lastTrackingCode)return;
-
-if(navigator.clipboard && navigator.clipboard.writeText){
+if(navigator.clipboard&&navigator.clipboard.writeText){
 navigator.clipboard.writeText(lastTrackingCode)
 .then(()=>alert("تم نسخ كود المتابعة ❤️"))
 .catch(()=>alert("انسخ الكود يدويًا: "+lastTrackingCode));
@@ -450,10 +585,7 @@ alert("كود المتابعة: "+lastTrackingCode);
 
 function sendOrderWhatsApp(){
 if(!lastWhatsAppMessage)return;
-
-const url="https://wa.me/201227221028?text="+
-encodeURIComponent(lastWhatsAppMessage);
-
+const url="https://wa.me/201227221028?text="+encodeURIComponent(lastWhatsAppMessage);
 window.open(url,"_blank");
 }
 
@@ -461,7 +593,6 @@ async function trackOrder(){
 const input=document.getElementById("trackingInput");
 const button=document.getElementById("trackButton");
 const result=document.getElementById("trackingResult");
-
 const code=input.value.trim().toLowerCase();
 
 if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(code)){
@@ -474,10 +605,7 @@ button.textContent="جاري البحث...";
 result.textContent="";
 
 try{
-const {data,error}=await db.rpc("track_order",{
-p_tracking_code:code
-});
-
+const {data,error}=await db.rpc("track_order",{p_tracking_code:code});
 if(error)throw error;
 
 if(!data){
@@ -489,7 +617,6 @@ const box=document.createElement("div");
 box.className="tracking-result";
 
 const title=document.createElement("h3");
-title.className="orange";
 title.textContent="تفاصيل طلبك";
 
 const orderId=document.createElement("p");
