@@ -42,14 +42,19 @@ input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#111;color
 footer{text-align:center;padding:20px;color:#aaa}
 #installBtn{display:none;margin:12px auto}
 .offer-section{padding:18px 14px}
-.offer-card{background:linear-gradient(145deg,#292018,#151515);border:2px solid #ff7900;border-radius:18px;padding:20px 15px;text-align:center;box-shadow:0 5px 22px #ff790022}
+.offer-card{background:linear-gradient(145deg,#292018,#151515);border:2px solid #ff7900;border-radius:18px;padding:20px 15px;text-align:center;box-shadow:0 5px 22px #ff790022;margin-bottom:18px}
 .offer-tag{display:inline-block;background:#ff7900;color:#111;padding:8px 17px;border-radius:30px;font-weight:bold;margin-bottom:12px}
 .offer-image{font-size:65px;margin:10px}
 .offer-card h2{color:#ff7900;font-size:26px}
 .offer-details{line-height:2;color:#eee}
 .offer-price{font-size:32px;font-weight:bold;color:#ff7900;margin:12px}
 .offer-gift{color:#ffb66d;font-weight:bold}
+.old-price{text-decoration:line-through;color:#aaa;font-size:18px}
 .offer-card .btn{width:100%;margin-top:10px}
+.new-offer{border-color:#ff3b25;background:linear-gradient(145deg,#45180f,#171717)}
+.new-offer .offer-tag{background:#e83222;color:white}
+.new-offer h2{color:#ff633b}
+.new-offer .offer-price{color:#ff633b}
 .tracking h2{color:#ff7900}
 .tracking-result{background:#111;border:1px solid #444;padding:15px;border-radius:10px;margin-top:15px;line-height:2}
 .tracking-code{font-size:19px;color:#ffad42;font-weight:bold;direction:ltr;display:block;overflow-wrap:anywhere}
@@ -94,7 +99,28 @@ footer{text-align:center;padding:20px;color:#aaa}
 <button class="btn" id="installBtn" type="button">📲 تثبيت التطبيق</button>
 </section>
 
+<!-- العروض -->
+
 <section class="offer-section" id="offers">
+
+<!-- العرض الجديد -->
+<div class="offer-card new-offer">
+<div class="offer-tag">🔥 عرض جديد النهاردة 🔥</div>
+<div class="offer-image">🦐🎁</div>
+<h2>عرض الجمبري الجديد</h2>
+<div class="offer-details">
+<strong>كل كيلو جمبري عليه ربع كيلو هدية</strong><br>
+<span class="offer-gift">🎁 هدية مع كل كيلو تطلبه</span>
+</div>
+<div class="offer-price">
+<span class="old-price">400 جنيه</span><br>
+330 جنيه فقط للكيلو
+</div>
+<p class="note">الحق العرض قبل نفاد الكمية ❤️</p>
+<button class="btn" onclick="addNewShrimpOffer()">اطلب العرض الآن 🛒</button>
+</div>
+
+<!-- عرض الخميس القديم -->
 <div class="offer-card">
 <div class="offer-tag">🔥 عرض الخميس 🔥</div>
 <div class="offer-image">🦐🍚</div>
@@ -107,6 +133,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 <p class="note">الحق العرض قبل نفاد الكمية ❤️</p>
 <button class="btn" onclick="addOffer()">اطلب العرض الآن 🛒</button>
 </div>
+
 </section>
 
 <h2 class="section" id="products">🛒 منتجاتنا وأسعارنا</h2>
@@ -156,6 +183,7 @@ footer{text-align:center;padding:20px;color:#aaa}
 </section>
 
 <h2 class="section" id="meals">🍽️ صواني ووجبات المعلم</h2>
+
 <section class="meals-section">
 <p class="meals-intro">
 اختار صينيتك أو وجبتك بالحجم اللي يناسبك ❤️<br>
@@ -171,11 +199,11 @@ footer{text-align:center;padding:20px;color:#aaa}
 <div class="meal-price">فردي<strong>180 جنيه</strong></div>
 <div class="meal-price">عائلي<strong>450 جنيه</strong></div>
 </div>
-<label for="size5">اختار الحجم</label>
-<select id="size5"><option value="individual">فردي</option><option value="family">عائلي</option></select>
-<label for="rice5">أطباق الرز الإضافية (30 جنيه للطبق)</label>
-<input type="number" id="rice5" value="0" min="0" step="1">
-<button class="btn" onclick="addMeal(5)">أضف للسلة 🛒</button>
+<label for="size6">اختار الحجم</label>
+<select id="size6"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice6">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice6" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(6)">أضف للسلة 🛒</button>
 </div>
 
 <div class="meal-card">
@@ -185,11 +213,11 @@ footer{text-align:center;padding:20px;color:#aaa}
 <div class="meal-price">فردي<strong>60 جنيه</strong></div>
 <div class="meal-price">عائلي<strong>110 جنيه</strong></div>
 </div>
-<label for="size6">اختار الحجم</label>
-<select id="size6"><option value="individual">فردي</option><option value="family">عائلي</option></select>
-<label for="rice6">أطباق الرز الإضافية (30 جنيه للطبق)</label>
-<input type="number" id="rice6" value="0" min="0" step="1">
-<button class="btn" onclick="addMeal(6)">أضف للسلة 🛒</button>
+<label for="size7">اختار الحجم</label>
+<select id="size7"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice7">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice7" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(7)">أضف للسلة 🛒</button>
 </div>
 
 <div class="meal-card">
@@ -199,11 +227,11 @@ footer{text-align:center;padding:20px;color:#aaa}
 <div class="meal-price">فردي<strong>100 جنيه</strong></div>
 <div class="meal-price">عائلي<strong>250 جنيه</strong></div>
 </div>
-<label for="size7">اختار الحجم</label>
-<select id="size7"><option value="individual">فردي</option><option value="family">عائلي</option></select>
-<label for="rice7">أطباق الرز الإضافية (30 جنيه للطبق)</label>
-<input type="number" id="rice7" value="0" min="0" step="1">
-<button class="btn" onclick="addMeal(7)">أضف للسلة 🛒</button>
+<label for="size8">اختار الحجم</label>
+<select id="size8"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice8">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice8" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(8)">أضف للسلة 🛒</button>
 </div>
 
 <div class="meal-card">
@@ -213,16 +241,18 @@ footer{text-align:center;padding:20px;color:#aaa}
 <div class="meal-price">فردي<strong>70 جنيه</strong></div>
 <div class="meal-price">عائلي<strong>110 جنيه</strong></div>
 </div>
-<label for="size8">اختار الحجم</label>
-<select id="size8"><option value="individual">فردي</option><option value="family">عائلي</option></select>
-<label for="rice8">أطباق الرز الإضافية (30 جنيه للطبق)</label>
-<input type="number" id="rice8" value="0" min="0" step="1">
-<button class="btn" onclick="addMeal(8)">أضف للسلة 🛒</button>
+<label for="size9">اختار الحجم</label>
+<select id="size9"><option value="individual">فردي</option><option value="family">عائلي</option></select>
+<label for="rice9">أطباق الرز الإضافية (30 جنيه للطبق)</label>
+<input type="number" id="rice9" value="0" min="0" step="1">
+<button class="btn" onclick="addMeal(9)">أضف للسلة 🛒</button>
 </div>
 
 </section>
 <p class="rice-note">🍚 طبق الرز الإضافي بـ30 جنيه، وينفع مع كل الصواني والوجبات.</p>
 </section>
+
+<!-- السلة -->
 
 <section class="cart" id="cart">
 <h2 style="color:#ff7900">🛒 سلة مشترياتك</h2>
@@ -233,6 +263,8 @@ footer{text-align:center;padding:20px;color:#aaa}
 الإجمالي: <span id="total">0</span> جنيه
 </div>
 </section>
+
+<!-- إتمام الطلب -->
 
 <section class="checkout">
 <h2>📋 بيانات إتمام الطلب</h2>
@@ -274,6 +306,8 @@ footer{text-align:center;padding:20px;color:#aaa}
 </div>
 </section>
 
+<!-- متابعة الطلب -->
+
 <section class="tracking" id="track">
 <h2>🔎 تابع طلبك</h2>
 <p class="note">اكتب كود المتابعة اللي ظهرلك بعد تسجيل الطلب.</p>
@@ -303,11 +337,18 @@ const products=[
 {name:"كابوريا",price:200},
 {name:"فسيخ",price:320},
 {name:"رنجة",price:180},
+
+// العرض القديم
 {name:"عرض الخميس: 2 كيلو جمبري + طبقين رز هدية",price:700,offer:true},
+
+// الصواني والوجبات
 {name:"صينية جمبري",meal:true,individual:180,family:450},
 {name:"صينية سمك بالفرن",meal:true,individual:60,family:110},
 {name:"وجبة جمبري مقلي",meal:true,individual:100,family:250},
-{name:"وجبة سمك مقلي",meal:true,individual:70,family:110}
+{name:"وجبة سمك مقلي",meal:true,individual:70,family:110},
+
+// العرض الجديد
+{name:"عرض الجمبري: كيلو + ربع كيلو هدية",price:330,shrimpGift:true}
 ];
 
 const statusNames={
@@ -340,6 +381,7 @@ render();
 alert("تمت إضافة المنتج للسلة ❤️");
 }
 
+// العرض القديم
 function addOffer(){
 let found=cart.find(x=>x.id===5);
 if(found)found.qty+=1;
@@ -347,6 +389,19 @@ else cart.push({id:5,qty:1,prep:"العرض كامل"});
 
 render();
 alert("تمت إضافة عرض الخميس للسلة ❤️");
+document.getElementById("cart").scrollIntoView({behavior:"smooth"});
+}
+
+// العرض الجديد: الكيلو بـ330 + ربع كيلو هدية
+function addNewShrimpOffer(){
+let id=10;
+let found=cart.find(x=>x.id===id);
+
+if(found)found.qty+=1;
+else cart.push({id:id,qty:1,prep:"ربع كيلو هدية مع كل كيلو"});
+
+render();
+alert("تمت إضافة عرض الجمبري الجديد للسلة ❤️");
 document.getElementById("cart").scrollIntoView({behavior:"smooth"});
 }
 
@@ -375,7 +430,8 @@ render();
 
 function changeQty(i,amount){
 let p=products[cart[i].id];
-cart[i].qty+=p.meal?amount:amount;
+cart[i].qty+=amount;
+
 if(cart[i].qty<=0)cart.splice(i,1);
 render();
 }
@@ -388,10 +444,12 @@ render();
 
 function getItemCost(item){
 let p=products[item.id];
+
 if(p.meal){
 let base=item.size==="family"?p.family:p.individual;
 return (base+(item.rice*30))*item.qty;
 }
+
 return p.price*item.qty;
 }
 
@@ -405,6 +463,7 @@ subtotal+=cost;
 
 if(p.meal){
 let sizeName=item.size==="family"?"عائلي":"فردي";
+
 html+=`<div class="cart-item">
 <strong>${p.name}</strong><br>
 الحجم: ${sizeName}<br>
@@ -416,7 +475,24 @@ html+=`<div class="cart-item">
 <button onclick="changeQty(${i},1)">➕</button>
 <button onclick="removeItem(${i})">حذف 🗑️</button>
 </div>`;
+
+}else if(p.shrimpGift){
+
+let gift=item.qty*0.25;
+
+html+=`<div class="cart-item">
+<strong>🔥 ${p.name}</strong><br>
+الكمية المطلوبة: ${item.qty} كيلو<br>
+🎁 كمية الجمبري الهدية: ${gift} كيلو<br>
+إجمالي الجمبري: ${item.qty+gift} كيلو<br>
+السعر: ${cost} جنيه<br>
+<button onclick="changeQty(${i},-1)">➖</button>
+<button onclick="changeQty(${i},1)">➕</button>
+<button onclick="removeItem(${i})">حذف 🗑️</button>
+</div>`;
+
 }else if(p.offer){
+
 html+=`<div class="cart-item">
 <strong>🔥 ${p.name}</strong><br>
 الكمية: ${item.qty} عرض<br>
@@ -426,7 +502,9 @@ html+=`<div class="cart-item">
 <button onclick="changeQty(${i},1)">➕</button>
 <button onclick="removeItem(${i})">حذف 🗑️</button>
 </div>`;
+
 }else{
+
 html+=`<div class="cart-item">
 <strong>${p.name}</strong><br>
 الكمية: ${item.qty} كيلو<br>
@@ -440,6 +518,7 @@ html+=`<div class="cart-item">
 });
 
 let delivery=document.getElementById("method").value==="pickup"?0:40;
+
 document.getElementById("items").innerHTML=html||"السلة فارغة ❤️";
 document.getElementById("subtotal").textContent=subtotal;
 document.getElementById("delivery").textContent=delivery;
@@ -447,6 +526,7 @@ document.getElementById("total").textContent=subtotal+delivery;
 }
 
 async function checkout(){
+
 if(!cart.length){
 alert("السلة فارغة، اختار منتجات الأول");
 return;
@@ -489,23 +569,39 @@ let preparation=item.prep||"";
 let details="";
 
 if(p.meal){
+
 let sizeName=item.size==="family"?"عائلي":"فردي";
 let unitBase=item.size==="family"?p.family:p.individual;
+
 preparation="الحجم: "+sizeName;
 details="عدد أطباق الرز الإضافية لكل وحدة: "+item.rice+
 " - سعر الوحدة: "+(unitBase+item.rice*30)+" جنيه";
+
 }else if(p.offer){
+
 details="2 كيلو جمبري + طبقين رز هدية";
+
+}else if(p.shrimpGift){
+
+let gift=item.qty*0.25;
+
+details="عرض خاص: السعر 330 جنيه للكيلو بدلاً من 400"+
+" - ربع كيلو هدية مع كل كيلو"+
+" - كمية الهدية: "+gift+" كيلو"+
+" - إجمالي الجمبري: "+(item.qty+gift)+" كيلو";
+
 }
 
 return {
 product_name:p.name,
 quantity:item.qty,
-unit_price:p.meal?(item.size==="family"?p.family:p.individual)+(item.rice*30):p.price,
+unit_price:p.meal?
+(item.size==="family"?p.family:p.individual)+(item.rice*30):p.price,
 preparation:preparation,
 details:details,
 item_total:cost
 };
+
 });
 
 let delivery=method==="pickup"?0:40;
@@ -519,15 +615,18 @@ let orderMessage=
 "طريقة الاستلام: "+(method==="pickup"?"استلام من المحل":"توصيل للمنزل")+
 (method==="pickup"?"":"\nالعنوان: "+address)+
 "\nطريقة الدفع: كاش عند الاستلام\n\n"+
+
 orderItems.map(item=>
 "• "+item.product_name+
 " - الكمية: "+item.quantity+
 (item.product_name.includes("عرض الخميس")?" عرض":
-(item.product_name.includes("صينية")||item.product_name.includes("وجبة")?" وحدة":" كيلو"))+
+(item.product_name.includes("عرض الجمبري")?" كيلو":
+(item.product_name.includes("صينية")||item.product_name.includes("وجبة")?" وحدة":" كيلو")))+
 (item.preparation?" - "+item.preparation:"")+
 (item.details?" - "+item.details:"")+
 " - "+item.item_total+" جنيه"
 ).join("\n")+
+
 "\n\nقيمة المنتجات: "+subtotal+" جنيه"+
 "\nالتوصيل: "+delivery+" جنيه"+
 "\nالإجمالي: "+total+" جنيه"+
@@ -539,6 +638,7 @@ btn.disabled=true;
 btn.textContent="جاري تسجيل الطلب...";
 
 try{
+
 const {error}=await db.from("orders").insert({
 customer_name:name,
 phone:phone,
@@ -564,20 +664,28 @@ render();
 alert("تم تسجيل طلبك بنجاح ❤️ احتفظ بكود المتابعة الظاهر في الموقع.");
 
 }catch(error){
+
 console.error("Supabase order error:",error);
 alert("لم نتمكن من تسجيل الطلب.\nالسبب: "+(error.message||"خطأ غير معروف"));
+
 }finally{
+
 btn.disabled=false;
 btn.textContent="تأكيد الطلب وإرسال واتساب 📲";
+
 }
+
 }
 
 function copyTrackingCode(){
 if(!lastTrackingCode)return;
+
 if(navigator.clipboard&&navigator.clipboard.writeText){
+
 navigator.clipboard.writeText(lastTrackingCode)
 .then(()=>alert("تم نسخ كود المتابعة ❤️"))
 .catch(()=>alert("انسخ الكود يدويًا: "+lastTrackingCode));
+
 }else{
 alert("كود المتابعة: "+lastTrackingCode);
 }
@@ -585,11 +693,13 @@ alert("كود المتابعة: "+lastTrackingCode);
 
 function sendOrderWhatsApp(){
 if(!lastWhatsAppMessage)return;
+
 const url="https://wa.me/201227221028?text="+encodeURIComponent(lastWhatsAppMessage);
 window.open(url,"_blank");
 }
 
 async function trackOrder(){
+
 const input=document.getElementById("trackingInput");
 const button=document.getElementById("trackButton");
 const result=document.getElementById("trackingResult");
@@ -605,6 +715,7 @@ button.textContent="جاري البحث...";
 result.textContent="";
 
 try{
+
 const {data,error}=await db.rpc("track_order",{p_tracking_code:code});
 if(error)throw error;
 
@@ -636,22 +747,29 @@ box.append(title,orderId,status,total,date);
 result.append(box);
 
 }catch(error){
+
 console.error(error);
 result.textContent="حصل خطأ أثناء البحث: "+error.message;
+
 }finally{
+
 button.disabled=false;
 button.textContent="عرض حالة الطلب";
+
 }
+
 }
 
 updateDelivery();
 
 if("serviceWorker" in navigator){
+
 window.addEventListener("load",()=>{
 navigator.serviceWorker.register("./sw.js")
 .then(()=>console.log("تم تجهيز التطبيق"))
 .catch(error=>console.log("تعذر تسجيل التطبيق",error));
 });
+
 }
 
 let deferredPrompt;
@@ -664,18 +782,21 @@ installBtn.style.display="inline-block";
 });
 
 installBtn.addEventListener("click",async()=>{
+
 if(!deferredPrompt)return;
+
 deferredPrompt.prompt();
 await deferredPrompt.userChoice;
 deferredPrompt=null;
 installBtn.style.display="none";
+
 });
 
 window.addEventListener("appinstalled",()=>{
 installBtn.style.display="none";
 alert("أهلاً بيك في تطبيق أسماك المعلم ❤️");
 });
-</script>
 
+</script>
 </body>
 </html>
